@@ -1,0 +1,19 @@
+language: groovy
+sudo: false
+
+jdk:
+- oraclejdk7
+
+env:
+  matrix:
+  - TERM=dumb
+
+script:
+- JAVA_OPTS="-Xmx384m -XX:+UseG1GC -XX:SoftRefLRUPolicyMSPerMB=0 -noverify" ./gradlew check
+
+matrix:
+  fast_finish: true
+
+cache:
+  directories:
+  - "$HOME/.gradle"

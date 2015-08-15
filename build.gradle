@@ -1,0 +1,111 @@
+apply plugin: 'groovy'
+apply plugin: 'nexus'
+apply plugin: 'codenarc'
+apply plugin: 'idea'
+
+group = 'net.anshulverma.gradle'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = '1.6'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+codenarcMain {
+  configFile = file('config/codenarc/rules.groovy')
+}
+
+codenarcTest {
+  configFile = file('config/codenarc/testrules.groovy')
+}
+
+codenarc {
+  toolVersion = 0.21
+  reportFormat = 'html'
+}
+
+tasks.withType(CodeNarc) { codeNarcTask ->
+  codeNarcTask.ignoreFailures = true
+}
+
+dependencies {
+  compile gradleApi()
+  compile localGroovy()
+
+  compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.7'
+  testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
+    exclude(module: 'groovy-all')
+  }
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': 'Gradle Estilo plugin',
+               'Implementation-Version': version,
+               'Built-By': 'Anshul Verma <anshul.verma86@gmail.com>',
+               'Built-Date': new Date(),
+               'Built-JDK': System.getProperty('java.version'),
+               'Built-Gradle': gradle.gradleVersion
+  }
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  classifier = 'javadoc'
+  from groovydoc.destinationDir
+}
+
+artifacts {
+  archives groovydocJar
+}
+
+modifyPom {
+  project {
+    name 'Gradle Estilo plugin'
+    description 'Gradle plugin that provides an easy way to configure and use checkstyle.'
+    url 'https://github.com/anshulverma/gradle-estilo-plugin'
+    inceptionYear '2015'
+
+    scm {
+      url 'https://github.com/anshulverma/gradle-estilo-plugin'
+      connection 'scm:https://anshulvermas@github.com/anshulverma/gradle-estilo-plugin.git'
+      developerConnection 'scm:git://github.com/anshulverma/gradle-estilo-plugin.git'
+    }
+
+    licenses {
+      license {
+        name 'The Apache Software License, Version 2.0'
+        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        distribution 'repo'
+      }
+    }
+
+    developers {
+      developer {
+        id 'anshulverma'
+        name 'Anshul Verma'
+        email 'anshul.verma86@gmail.com'
+        roles {
+          role 'owner'
+          role 'developer'
+        }
+      }
+    }
+  }
+}
+
+nexus {
+  sign = true
+  repositoryUrl = "${nexusUrl}/service/local/staging/deploy/maven2/"
+  snapshotRepositoryUrl = "${nexusUrl}/content/repositories/snapshots/"
+}
