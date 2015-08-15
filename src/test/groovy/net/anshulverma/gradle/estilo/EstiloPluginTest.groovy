@@ -25,22 +25,22 @@ class EstiloPluginTest extends Specification {
 
   def 'Add task to project test'() {
     given:
-    def project = ProjectBuilder.builder().build()
-    def task = project.task('estilo', type: EstiloTask)
+      def project = ProjectBuilder.builder().build()
+      def task = project.task('estilo', type: EstiloTask)
 
     expect:
-    task instanceof EstiloTask
+      task instanceof EstiloTask
   }
 
   def 'Plugin adds estilo task to project'() {
     given:
-    def project = ProjectBuilder.builder().build()
+      def project = ProjectBuilder.builder().build()
 
     when:
-    project.apply plugin: 'net.anshulverma.gradle.estilo'
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
 
     then:
-    project.tasks.estilo instanceof EstiloTask
+      project.tasks.estilo instanceof EstiloTask
   }
 
   def singleProject() {
