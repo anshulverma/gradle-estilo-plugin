@@ -47,17 +47,12 @@ class EstiloPlugin implements Plugin<Project> {
       dependsOn 'estilo'
     }
 
-    EstiloTask estiloTask = (project.getTasksByName('estilo', false)).first() as EstiloTask
     project.checkstyle {
       showViolations = true
       ignoreFailures = false
       sourceSets = [sourceSets.main, sourceSets.test]
       toolVersion = '6.7'
       configFile = "$buildDir/checkstyle.xml" as File
-      configProperties = [
-          'header.file'      : estiloTask.header,
-          'suppressions.file': estiloTask.suppressions
-      ]
     }
   }
 }

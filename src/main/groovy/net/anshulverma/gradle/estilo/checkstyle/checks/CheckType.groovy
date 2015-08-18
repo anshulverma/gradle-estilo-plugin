@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checks
-
-import groovy.transform.TupleConstructor
-import groovy.transform.TypeChecked
-import org.apache.commons.io.FileUtils
+package net.anshulverma.gradle.estilo.checkstyle.checks
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@TypeChecked
-@TupleConstructor
-class ConfigFileLoader {
+public enum CheckType {
 
-  CheckType checkType
-  String configDir
+  GOOGLE('google_checks.xml'),
+  SUN('sun_checks.xml')
 
-  def load() {
-    def url = this.getClass().getResource("/${checkType.filename}")
-    def file = new File("$configDir/checkstyle.xml")
-    FileUtils.copyURLToFile(url, file)
-    return file
+  String filename
+
+  private CheckType(def filename) {
+    this.filename = filename
   }
 }

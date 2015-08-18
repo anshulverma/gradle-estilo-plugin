@@ -16,10 +16,8 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.transform.TypeChecked
-import net.anshulverma.gradle.estilo.checks.ConfigFileLoader
+import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFileLoader
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -29,14 +27,6 @@ import org.gradle.api.tasks.TaskAction
 class EstiloTask extends DefaultTask {
 
   private String checkstyleConfigDir
-
-  @Input
-  @Optional
-  String header
-
-  @Input
-  @Optional
-  String suppressions
 
   EstiloTask() {
     description = 'Manages checkstyle checkers for this project.'

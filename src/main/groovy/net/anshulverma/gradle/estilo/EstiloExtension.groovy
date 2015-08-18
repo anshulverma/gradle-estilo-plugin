@@ -15,13 +15,11 @@
  */
 package net.anshulverma.gradle.estilo
 
-import groovy.transform.ToString
-import net.anshulverma.gradle.estilo.checks.CheckType
+import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@ToString
 class EstiloExtension {
 
   CheckType baseChecks

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checks
+package net.anshulverma.gradle.estilo.checkstyle.checks
 
 import net.anshulverma.gradle.estilo.test.AbstractSpecification
 import org.apache.commons.io.IOUtils

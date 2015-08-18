@@ -39,6 +39,5 @@ class CheckstyleConfigurationTest extends AbstractSpecification {
       extension.toolVersion == '6.7'
       extension.configFile instanceof File
       extension.configFile.path == "$buildDir/checkstyle.xml"
-      extension.configProperties == ['header.file': null, 'suppressions.file': null]
   }
 }

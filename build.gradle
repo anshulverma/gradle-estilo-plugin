@@ -46,6 +46,8 @@ dependencies {
     transitive = false
   }
   compile 'commons-io:commons-io:2.4'
+  compile 'javax.xml:jaxb-api:2.1'
+  compile 'javax.xml:jaxb-impl:2.1'
 
   compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.7'
   testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
