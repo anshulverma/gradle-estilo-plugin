@@ -26,7 +26,7 @@ import java.security.MessageDigest
  */
 class FileLoaderTest extends AbstractSpecification {
 
-  @Unroll('load checks for #checkType')
+  @Unroll('load #checkType checks')
   def 'Load checks file'() {
     given:
       def project = singleJavaProject()
