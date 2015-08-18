@@ -78,14 +78,14 @@ jacocoTestReport {
   reports {
     csv.enabled false
     xml.enabled true
-    xml.destination "${buildDir}/jacoco/testReport.xml"
-    html.destination "${buildDir}/jacoco/html"
+    xml.destination "${buildDir}/reports/jacocoTestReport.xml"
+    html.destination "${buildDir}/reports/coverage-jacoco"
   }
 }
 
 coveralls {
   sourceDirs = sourceSets.main.allSource.srcDirs.toList()
-  jacocoReportPath = "${buildDir}/reports/jacoco/testReport.xml"
+  jacocoReportPath = "${buildDir}/reports/jacocoTestReport.xml"
 }
 
 tasks.coveralls {
