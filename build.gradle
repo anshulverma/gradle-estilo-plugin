@@ -33,15 +33,16 @@ codenarcTest {
 codenarc {
   toolVersion = 0.21
   reportFormat = 'html'
-}
-
-tasks.withType(CodeNarc) { codeNarcTask ->
-  codeNarcTask.ignoreFailures = true
+  ignoreFailures = false
 }
 
 dependencies {
   compile gradleApi()
   compile localGroovy()
+  compile dependencies.create('com.puppycrawl.tools:checkstyle:6.7') {
+    transitive = false
+  }
+  compile 'commons-io:commons-io:2.4'
 
   compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.7'
   testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {

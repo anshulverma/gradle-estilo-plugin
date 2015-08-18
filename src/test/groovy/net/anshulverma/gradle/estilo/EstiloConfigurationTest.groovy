@@ -15,13 +15,14 @@
  */
 package net.anshulverma.gradle.estilo
 
+import net.anshulverma.gradle.estilo.test.AbstractSpecification
+import org.gradle.api.plugins.quality.CheckstylePlugin
 import org.gradle.testfixtures.ProjectBuilder
-import spock.lang.Specification
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class EstiloPluginTest extends Specification {
+class EstiloConfigurationTest extends AbstractSpecification {
 
   def 'Add task to project test'() {
     given:
@@ -34,7 +35,7 @@ class EstiloPluginTest extends Specification {
 
   def 'Plugin adds estilo task to project'() {
     given:
-      def project = ProjectBuilder.builder().build()
+      def project = singleJavaProject()
 
     when:
       project.apply plugin: 'net.anshulverma.gradle.estilo'
@@ -43,7 +44,25 @@ class EstiloPluginTest extends Specification {
       project.tasks.estilo instanceof EstiloTask
   }
 
-  def singleProject() {
-    new ProjectBuilder().withName('single').build()
+  def 'Checkstyle plugin is not added to non-java projects'() {
+    given:
+      def project = singleProject()
+
+    when:
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
+
+    then:
+      project.plugins.withType(CheckstylePlugin).size() == 0
+  }
+
+  def 'Checkstyle plugin is added to java projects'() {
+    given:
+      def project = singleJavaProject()
+
+    when:
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
+
+    then:
+      project.plugins.withType(CheckstylePlugin).size() == 1
   }
 }

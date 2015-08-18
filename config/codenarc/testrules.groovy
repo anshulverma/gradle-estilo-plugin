@@ -30,6 +30,7 @@ ruleset {
   ruleset('rulesets/exceptions.xml')
   ruleset('rulesets/formatting.xml') {
     ClassJavadoc(enabled: false)
+    SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
   }
   // generic rules need to be configured to be active and useful
   //ruleset('rulesets/generic.xml')
@@ -40,13 +41,29 @@ ruleset {
     description = 'TODOs should not be commited'
   }
 
+  RequiredRegex {
+    name = 'ApacheLicenseRequired'
+    regex = /(?m)^\/\*\*$\n^ \* Copyright 2015 Anshul Verma. All Rights Reserved.$\n^ \*$\n^ \* Licensed under the Apache License, Version 2.0 \(the "License"\);$/
+    violationMessage = 'The Apache License 2.0 comment is missing from the source file'
+    description = 'Checks that all source files contain the Apache License 2.0 comment'
+  }
+
+  RequiredRegex {
+    name = 'AuthorRequired'
+    regex = /@author Anshul Verma \(anshul.verma86@gmail.com\)/
+    violationMessage = 'The @author comment is missing from the source file'
+    description = 'Checks that all source files contain the @author comment'
+  }
+
   ruleset('rulesets/groovyism.xml') {
     GetterMethodCouldBeProperty(enabled: false)
   }
   ruleset('rulesets/imports.xml') {
     NoWildcardImports(enabled: false)
   }
-  ruleset('rulesets/junit.xml')
+  ruleset('rulesets/junit.xml') {
+    JUnitPublicNonTestMethod(enabled: false)
+  }
   ruleset('rulesets/logging.xml')
   ruleset('rulesets/naming.xml') {
     FactoryMethodName(enabled: false)

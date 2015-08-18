@@ -1,5 +1,5 @@
-/*
- * Copyright 2012-2014 Anshul Verma. All Rights Reserved.
+/**
+ * Copyright 2015 Anshul Verma. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package net.anshulverma.gradle.estilo
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.quality.Checkstyle
 
 /**
  * Registers the plugin's tasks.
@@ -26,7 +27,37 @@ import org.gradle.api.Project
 class EstiloPlugin implements Plugin<Project> {
 
   @Override
-  void apply(Project project) {
-    project.tasks.create('estilo', EstiloTask)
+  void apply(def Project project) {
+    if (project.plugins.hasPlugin('java')) {
+      def buildDir = "${project.rootDir}/build/estilo"
+
+      project.extensions.create('estilo', EstiloExtension)
+      project.tasks.create('estilo', EstiloTask) {
+        checkstyleConfigDir buildDir
+      }
+
+      setupCheckstyle(project, buildDir)
+    }
+  }
+
+  private void setupCheckstyle(Project project, buildDir) {
+    project.apply plugin: 'checkstyle'
+
+    project.tasks.withType(Checkstyle) {
+      dependsOn 'estilo'
+    }
+
+    EstiloTask estiloTask = (project.getTasksByName('estilo', false)).first() as EstiloTask
+    project.checkstyle {
+      showViolations = true
+      ignoreFailures = false
+      sourceSets = [sourceSets.main, sourceSets.test]
+      toolVersion = '6.7'
+      configFile = "$buildDir/checkstyle.xml" as File
+      configProperties = [
+          'header.file'      : estiloTask.header,
+          'suppressions.file': estiloTask.suppressions
+      ]
+    }
   }
 }

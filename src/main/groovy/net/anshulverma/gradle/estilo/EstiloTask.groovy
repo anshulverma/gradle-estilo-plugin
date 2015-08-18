@@ -1,5 +1,5 @@
-/*
- * Copyright 2012-2014 Anshul Verma. All Rights Reserved.
+/**
+ * Copyright 2015 Anshul Verma. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.transform.TypeChecked
-import net.anshulverma.gradle.estilo.instrument.Instrumentor
+import net.anshulverma.gradle.estilo.checks.ConfigFileLoader
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -27,8 +28,15 @@ import org.gradle.api.tasks.TaskAction
 @TypeChecked
 class EstiloTask extends DefaultTask {
 
+  private String checkstyleConfigDir
+
   @Input
-  String outputDir = 'build/estilo'
+  @Optional
+  String header
+
+  @Input
+  @Optional
+  String suppressions
 
   EstiloTask() {
     description = 'Manages checkstyle checkers for this project.'
@@ -36,13 +44,17 @@ class EstiloTask extends DefaultTask {
   }
 
   @TaskAction
-  def runChecker() {
-    def instrumentor = new Instrumentor(project, outputDirectory())
-    def instrumented = instrumentor.instrument()
-    instrumented.run()
+  def run() {
+    def project = getProject()
+    def settings = (EstiloExtension) project.getExtensions().findByName('estilo')
+    new ConfigFileLoader(settings.baseChecks, getCheckstyleConfigDir()).load()
   }
 
-  String outputDirectory() {
-    System.properties.get('outputDir', outputDir)
+  String getCheckstyleConfigDir() {
+    System.properties.get('checkstyleConfigDir', checkstyleConfigDir)
+  }
+
+  def setCheckstyleConfigDir(String checkstyleConfigDir) {
+    this.checkstyleConfigDir = checkstyleConfigDir
   }
 }

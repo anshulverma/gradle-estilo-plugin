@@ -28,7 +28,8 @@ ruleset {
   ruleset('rulesets/exceptions.xml')
   ruleset('rulesets/formatting.xml') {
     ClassJavadoc(enabled: false)
-    SpaceAroundMapEntryColon(characterAfterColonRegex: /\s/)
+    SpaceAroundMapEntryColon(characterBeforeColonRegex: /(\s|\S)/,
+                             characterAfterColonRegex: /\s/)
   }
   // generic rules need to be configured to be active and useful
   //ruleset('rulesets/generic.xml')
@@ -37,6 +38,20 @@ ruleset {
     priority = 2
     regex = /TODO/
     description = 'TODOs should not be commited'
+  }
+
+  RequiredRegex {
+    name = 'ApacheLicenseRequired'
+    regex = /(?m)^\/\*\*$\n^ \* Copyright 2015 Anshul Verma. All Rights Reserved.$\n^ \*$\n^ \* Licensed under the Apache License, Version 2.0 \(the "License"\);$/
+    violationMessage = 'The Apache License 2.0 comment is missing from the source file'
+    description = 'Checks that all source files contain the Apache License 2.0 comment'
+  }
+
+  RequiredRegex {
+    name = 'AuthorRequired'
+    regex = /@author Anshul Verma \(anshul.verma86@gmail.com\)/
+    violationMessage = 'The @author comment is missing from the source file'
+    description = 'Checks that all source files contain the @author comment'
   }
 
   ruleset('rulesets/groovyism.xml') {
