@@ -17,3 +17,6 @@ matrix:
 cache:
   directories:
   - "$HOME/.gradle"
+
+after_success:
+  - "./gradlew coveralls"

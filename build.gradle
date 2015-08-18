@@ -2,6 +2,8 @@ apply plugin: 'groovy'
 apply plugin: 'nexus'
 apply plugin: 'codenarc'
 apply plugin: 'idea'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
 
 group = 'net.anshulverma.gradle'
 version = '0.0.1-SNAPSHOT'
@@ -15,6 +17,7 @@ buildscript {
 
   dependencies {
     classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7.1'
+    classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
   }
 }
 
@@ -64,6 +67,33 @@ jar {
 task groovydocJar(type: Jar, dependsOn: groovydoc) {
   classifier = 'javadoc'
   from groovydoc.destinationDir
+}
+
+jacoco {
+  toolVersion = "0.7.1.201405082137"
+  reportsDir = file("$buildDir/jacoco")
+}
+
+jacocoTestReport {
+  reports {
+    csv.enabled false
+    xml.enabled true
+    xml.destination "${buildDir}/jacoco/testReport.xml"
+    html.destination "${buildDir}/jacoco/html"
+  }
+}
+
+coveralls {
+  sourceDirs = sourceSets.main.allSource.srcDirs.toList()
+  jacocoReportPath = "${buildDir}/reports/jacoco/testReport.xml"
+}
+
+tasks.coveralls {
+  group = 'Coverage reports'
+  description = 'Uploads the coverage report to Coveralls'
+
+  dependsOn jacocoTestReport
+  onlyIf { System.env.'CI' }
 }
 
 artifacts {
