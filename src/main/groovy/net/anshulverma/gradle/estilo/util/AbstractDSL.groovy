@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo
-
-import groovy.util.logging.Slf4j
-import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
-import net.anshulverma.gradle.estilo.util.AbstractDSL
+package net.anshulverma.gradle.estilo.util
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@Slf4j
-class EstiloExtension extends AbstractDSL<Closure> {
+abstract class AbstractDSL<T> {
 
-  CheckType baseChecks
-  Map checks = [:]
-
-  def source(String type) {
-    baseChecks = CheckType.valueOf(type.toUpperCase())
+  protected AbstractDSL() {
+    def mc = new ExpandoMetaClass(getClass(), false, true)
+    mc.initialize()
+    this.metaClass = mc
   }
 
-  @Override
-  protected handle(String name, Closure closure) {
-    log.debug('adding custom check {}', name)
-    checks[name] = checks[name] ?: new PropertiesExtension()
-    closure.@owner = checks[name]
-    closure()
+  def methodMissing(String name, args) {
+    if (args.length == 1) {
+      handle(name, convertArg(args[0]))
+    } else {
+      throw new MissingMethodException(name, this.class, args)
+    }
   }
+
+  protected def convertArg(def arg) {
+    arg as T
+  }
+
+  protected abstract handle(String name, T value)
 }

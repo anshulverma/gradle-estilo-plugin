@@ -44,4 +44,22 @@ class EstiloExtensionTest extends AbstractSpecification {
       CheckType.GOOGLE | 'google'
       CheckType.SUN    | 'sun'
   }
+
+  def 'Allow adding RegexpHeader check'() {
+    given:
+      def extension = new EstiloExtension()
+      def rootDir = '/tmp'
+      def closure = {
+        RegexpHeader {
+          headerFile "$rootDir/config/checkstyle/java.header.txt"
+        }
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.checks.RegexpHeader.properties.headerFile == '/tmp/config/checkstyle/java.header.txt'
+  }
 }

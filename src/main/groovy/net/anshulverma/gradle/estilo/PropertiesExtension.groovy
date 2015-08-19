@@ -15,28 +15,22 @@
  */
 package net.anshulverma.gradle.estilo
 
-import groovy.util.logging.Slf4j
-import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 import net.anshulverma.gradle.estilo.util.AbstractDSL
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@Slf4j
-class EstiloExtension extends AbstractDSL<Closure> {
+class PropertiesExtension extends AbstractDSL<String> {
 
-  CheckType baseChecks
-  Map checks = [:]
+  Map properties = [:]
 
-  def source(String type) {
-    baseChecks = CheckType.valueOf(type.toUpperCase())
+  @Override
+  protected handle(String name, String value) {
+    properties[name] = value
   }
 
   @Override
-  protected handle(String name, Closure closure) {
-    log.debug('adding custom check {}', name)
-    checks[name] = checks[name] ?: new PropertiesExtension()
-    closure.@owner = checks[name]
-    closure()
+  protected convertArg(def arg) {
+    arg.toString()
   }
 }
