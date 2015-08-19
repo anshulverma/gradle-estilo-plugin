@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,15 +16,32 @@
 package net.anshulverma.gradle.estilo
 
 import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
+import net.anshulverma.gradle.estilo.test.AbstractSpecification
+import spock.lang.Unroll
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class EstiloExtension {
+class EstiloExtensionTest extends AbstractSpecification {
 
-  CheckType baseChecks
+  @Unroll('convert #checkType check type')
+  def 'Choose a valid base checks type'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        source name
+      }
+      closure.delegate = extension
 
-  def source(String type) {
-    baseChecks = CheckType.valueOf(type.toUpperCase())
+    when:
+      closure()
+
+    then:
+      extension.baseChecks == checkType
+
+    where:
+      checkType        | name
+      CheckType.GOOGLE | 'google'
+      CheckType.SUN    | 'sun'
   }
 }
