@@ -61,7 +61,56 @@ class EstiloExtensionTest extends AbstractSpecification {
       closure()
 
     then:
-      extension.checks.RegexpHeader.properties.headerFile == '/tmp/config/checkstyle/java.header.txt'
-      extension.checks.RegexpHeader.properties.multiLines == '23,24,25'
+      extension.checks.size() == 1
+
+      def check = extension.checks.pop()
+      check.name == 'RegexpHeader'
+      check.headerFile == '/tmp/config/checkstyle/java.header.txt'
+      check.multiLines == '23,24,25'
+  }
+
+  def 'Allow adding multiple check of same name'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        DescendantToken {
+          id 'stringEqual'
+          tokens 'EQUAL,NOT_EQUAL'
+          limitedTokens 'STRING_LITERAL'
+          maximumNumber 0
+          maximumDepth 1
+        }
+        DescendantToken {
+          id 'switchNoDefault'
+          tokens 'LITERAL_SWITCH'
+          limitedTokens 'LITERAL_DEFAULT'
+          maximumNumber 2
+          maximumDepth 1
+        }
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.checks.size() == 2
+
+      def check2 = extension.checks.pop()
+      def check1 = extension.checks.pop()
+
+      check1.name == 'DescendantToken'
+      check1.id == 'stringEqual'
+      check1.tokens == 'EQUAL,NOT_EQUAL'
+      check1.limitedTokens == 'STRING_LITERAL'
+      check1.maximumNumber == '0'
+      check1.maximumDepth == '1'
+
+      check2.name == 'DescendantToken'
+      check2.id == 'switchNoDefault'
+      check2.tokens == 'LITERAL_SWITCH'
+      check2.limitedTokens == 'LITERAL_DEFAULT'
+      check2.maximumNumber == '2'
+      check2.maximumDepth == '1'
   }
 }

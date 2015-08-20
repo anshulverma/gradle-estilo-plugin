@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo
+package net.anshulverma.gradle.estilo.checkstyle
 
 import net.anshulverma.gradle.estilo.util.AbstractDSL
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class PropertiesExtension extends AbstractDSL<String> {
+class CheckPropertiesExtension extends AbstractDSL<String> {
+
+  final String name
 
   Map properties = [:]
+
+  CheckPropertiesExtension(String name) {
+    super()
+    this.name = name
+  }
 
   @Override
   protected handle(String name, String value) {
@@ -36,5 +43,13 @@ class PropertiesExtension extends AbstractDSL<String> {
     } else {
       arg.toString()
     }
+  }
+
+  @Override
+  protected handle(String name) {
+    if (!properties.containsKey(name)) {
+      throw new MissingPropertyException(name, this.class)
+    }
+    properties[name]
   }
 }

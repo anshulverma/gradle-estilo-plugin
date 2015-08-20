@@ -34,9 +34,15 @@ abstract class AbstractDSL<T> {
     }
   }
 
+  def propertyMissing(String name) {
+    handle(name)
+  }
+
   protected def convertArg(def arg) {
     arg as T
   }
 
   protected abstract handle(String name, T value)
+
+  protected abstract handle(String name)
 }

@@ -16,6 +16,7 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.util.logging.Slf4j
+import net.anshulverma.gradle.estilo.checkstyle.CheckPropertiesExtension
 import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 import net.anshulverma.gradle.estilo.util.AbstractDSL
 
@@ -26,7 +27,7 @@ import net.anshulverma.gradle.estilo.util.AbstractDSL
 class EstiloExtension extends AbstractDSL<Closure> {
 
   CheckType baseChecks
-  Map checks = [:]
+  List checks = []
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
@@ -35,8 +36,14 @@ class EstiloExtension extends AbstractDSL<Closure> {
   @Override
   protected handle(String name, Closure closure) {
     log.debug('adding custom check {}', name)
-    checks[name] = checks[name] ?: new PropertiesExtension()
-    closure.@owner = checks[name]
+    def check = new CheckPropertiesExtension(name)
+    closure.@owner = check
     closure()
+    checks.push(check)
+  }
+
+  @Override
+  protected handle(String name) {
+    throw new MissingPropertyException('cannot retrieve arbitrary properties', name, this.class)
   }
 }
