@@ -52,6 +52,7 @@ class EstiloExtensionTest extends AbstractSpecification {
       def closure = {
         RegexpHeader {
           headerFile "$rootDir/config/checkstyle/java.header.txt"
+          multiLines([23, 24, 25])
         }
       }
       closure.delegate = extension
@@ -61,5 +62,6 @@ class EstiloExtensionTest extends AbstractSpecification {
 
     then:
       extension.checks.RegexpHeader.properties.headerFile == '/tmp/config/checkstyle/java.header.txt'
+      extension.checks.RegexpHeader.properties.multiLines == '23,24,25'
   }
 }

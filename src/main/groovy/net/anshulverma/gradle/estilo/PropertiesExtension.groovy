@@ -31,6 +31,10 @@ class PropertiesExtension extends AbstractDSL<String> {
 
   @Override
   protected convertArg(def arg) {
-    arg.toString()
+    if (arg instanceof List) {
+      arg.join(',')
+    } else {
+      arg.toString()
+    }
   }
 }
