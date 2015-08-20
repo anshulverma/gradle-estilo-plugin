@@ -41,6 +41,17 @@ dependencies {
   }
 }
 
+ext {
+  coverageLimits = [
+      'instruction': 82,
+      'branch'     : 43,
+      'line'       : 88,
+      'complexity' : 68,
+      'method'     : 76,
+      'class'      : 100
+  ]
+}
+
 apply from: "$rootDir/gradle/code_quality.gradle"
 apply from: "$rootDir/gradle/reports.gradle"
 apply from: "$rootDir/gradle/publish.gradle"

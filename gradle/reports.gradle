@@ -1,6 +1,5 @@
 coveralls {
   sourceDirs = sourceSets.main.allSource.srcDirs.toList()
-  jacocoReportPath = "${buildDir}/reports/jacocoTestReport.xml"
 }
 
 tasks.coveralls {
