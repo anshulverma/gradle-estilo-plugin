@@ -1,3 +1,5 @@
+apply plugin: 'nexus'
+
 jar {
   manifest {
     attributes 'Implementation-Title': 'Gradle Estilo plugin',

@@ -1,3 +1,6 @@
+apply plugin: 'codenarc'
+apply plugin: 'jacoco'
+
 codenarcMain {
   configFile = file('config/codenarc/rules.groovy')
 }
