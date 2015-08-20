@@ -1,0 +1,20 @@
+coveralls {
+  sourceDirs = sourceSets.main.allSource.srcDirs.toList()
+  jacocoReportPath = "${buildDir}/reports/jacocoTestReport.xml"
+}
+
+tasks.coveralls {
+  group = 'Coverage reports'
+  description = 'Uploads the coverage report to Coveralls'
+
+  dependsOn jacocoTestReport
+  onlyIf { System.env.'CI' }
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  classifier = 'javadoc'
+  from groovydoc.destinationDir
+}
+artifacts {
+  archives groovydocJar
+}

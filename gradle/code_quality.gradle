@@ -1,0 +1,27 @@
+codenarcMain {
+  configFile = file('config/codenarc/rules.groovy')
+}
+
+codenarcTest {
+  configFile = file('config/codenarc/testrules.groovy')
+}
+
+codenarc {
+  toolVersion = 0.21
+  reportFormat = 'html'
+  ignoreFailures = false
+}
+
+jacoco {
+  toolVersion = "0.7.1.201405082137"
+  reportsDir = file("$buildDir/jacoco")
+}
+
+jacocoTestReport {
+  reports {
+    csv.enabled false
+    xml.enabled true
+    xml.destination "${buildDir}/reports/jacocoTestReport.xml"
+    html.destination "${buildDir}/reports/coverage-jacoco"
+  }
+}
