@@ -13,30 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo
+package net.anshulverma.gradle.estilo.checkstyle
 
-import groovy.util.logging.Slf4j
-import net.anshulverma.gradle.estilo.checkstyle.CheckCollection
-import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
+import net.anshulverma.gradle.estilo.util.AbstractDSL
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@Slf4j
-class EstiloExtension {
+class CheckProperties extends AbstractDSL<String> {
 
-  CheckType baseChecks
-  CheckCollection checkCollection
+  final String name
 
-  def source(String type) {
-    baseChecks = CheckType.valueOf(type.toUpperCase())
+  Map properties = [:]
+
+  CheckProperties(String name) {
+    super()
+    this.name = name
   }
 
-  def checks(Closure closure) {
-    checkCollection = new CheckCollection()
-    closure.delegate = checkCollection
-    closure()
-    log.debug("added ${checkCollection.length} new checks")
-    checkCollection
+  @Override
+  protected handle(String name, String value) {
+    properties[name] = value
+  }
+
+  @Override
+  protected convertArg(def arg) {
+    if (arg instanceof List) {
+      arg.join(',')
+    } else {
+      arg.toString()
+    }
+  }
+
+  @Override
+  protected handle(String name) {
+    if (!properties.containsKey(name)) {
+      throw new MissingPropertyException(name, this.class)
+    }
+    properties[name]
   }
 }

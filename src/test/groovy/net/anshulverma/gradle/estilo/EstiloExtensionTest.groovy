@@ -50,9 +50,11 @@ class EstiloExtensionTest extends AbstractSpecification {
       def extension = new EstiloExtension()
       def rootDir = '/tmp'
       def closure = {
-        RegexpHeader {
-          headerFile "$rootDir/config/checkstyle/java.header.txt"
-          multiLines([23, 24, 25])
+        checks {
+          RegexpHeader {
+            headerFile "$rootDir/config/checkstyle/java.header.txt"
+            multiLines([23, 24, 25])
+          }
         }
       }
       closure.delegate = extension
@@ -61,9 +63,9 @@ class EstiloExtensionTest extends AbstractSpecification {
       closure()
 
     then:
-      extension.checks.size() == 1
+      extension.checkCollection.length == 1
 
-      def check = extension.checks.pop()
+      def check = extension.checkCollection.checks.pop()
       check.name == 'RegexpHeader'
       check.headerFile == '/tmp/config/checkstyle/java.header.txt'
       check.multiLines == '23,24,25'
@@ -73,19 +75,21 @@ class EstiloExtensionTest extends AbstractSpecification {
     given:
       def extension = new EstiloExtension()
       def closure = {
-        DescendantToken {
-          id 'stringEqual'
-          tokens 'EQUAL,NOT_EQUAL'
-          limitedTokens 'STRING_LITERAL'
-          maximumNumber 0
-          maximumDepth 1
-        }
-        DescendantToken {
-          id 'switchNoDefault'
-          tokens 'LITERAL_SWITCH'
-          limitedTokens 'LITERAL_DEFAULT'
-          maximumNumber 2
-          maximumDepth 1
+        checks {
+          DescendantToken {
+            id 'stringEqual'
+            tokens 'EQUAL,NOT_EQUAL'
+            limitedTokens 'STRING_LITERAL'
+            maximumNumber 0
+            maximumDepth 1
+          }
+          DescendantToken {
+            id 'switchNoDefault'
+            tokens 'LITERAL_SWITCH'
+            limitedTokens 'LITERAL_DEFAULT'
+            maximumNumber 2
+            maximumDepth 1
+          }
         }
       }
       closure.delegate = extension
@@ -94,10 +98,10 @@ class EstiloExtensionTest extends AbstractSpecification {
       closure()
 
     then:
-      extension.checks.size() == 2
+      extension.checkCollection.length == 2
 
-      def check2 = extension.checks.pop()
-      def check1 = extension.checks.pop()
+      def check2 = extension.checkCollection.checks.pop()
+      def check1 = extension.checkCollection.checks.pop()
 
       check1.name == 'DescendantToken'
       check1.id == 'stringEqual'
