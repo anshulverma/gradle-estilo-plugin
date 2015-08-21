@@ -75,6 +75,7 @@ ruleset {
   ruleset('rulesets/serialization.xml')
   ruleset('rulesets/size.xml') {
     CrapMetric(enabled: false)
+    AbcMetric(enabled: false)
   }
   ruleset('rulesets/unnecessary.xml') {
     UnnecessaryDefInMethodDeclaration(enabled: false)

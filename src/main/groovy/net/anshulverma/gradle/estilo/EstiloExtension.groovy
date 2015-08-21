@@ -16,7 +16,8 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.util.logging.Slf4j
-import net.anshulverma.gradle.estilo.checkstyle.CheckCollection
+import net.anshulverma.gradle.estilo.checkstyle.PropertyCollection
+import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 
 /**
@@ -26,17 +27,25 @@ import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 class EstiloExtension {
 
   CheckType baseChecks
-  CheckCollection checkCollection
+  PropertyCollection checkCollection
+  PropertyCollection suppressionCollection
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
   }
 
   def checks(Closure closure) {
-    checkCollection = new CheckCollection()
-    closure.delegate = checkCollection
+    checkCollection = evaluate('checks', new PropertyCollection(), closure)
+  }
+
+  def suppressions(Closure closure) {
+    suppressionCollection = evaluate('suppressions', new SuppressionCollection(), closure)
+  }
+
+  private def evaluate(name, collection, closure) {
+    closure.delegate = collection
     closure()
-    log.debug("added ${checkCollection.length} new checks")
-    checkCollection
+    log.debug("added ${collection.length} $name")
+    collection
   }
 }

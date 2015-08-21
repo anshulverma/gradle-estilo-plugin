@@ -56,6 +56,7 @@ ruleset {
 
   ruleset('rulesets/groovyism.xml') {
     GetterMethodCouldBeProperty(enabled: false)
+    GStringExpressionWithinString(enabled: false) // regex contains this as parameter
   }
   ruleset('rulesets/imports.xml') {
     NoWildcardImports(enabled: false)

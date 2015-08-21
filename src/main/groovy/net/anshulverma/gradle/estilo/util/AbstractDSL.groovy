@@ -15,6 +15,8 @@
  */
 package net.anshulverma.gradle.estilo.util
 
+import com.google.common.collect.Lists
+
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
@@ -27,11 +29,13 @@ abstract class AbstractDSL<T> {
   }
 
   def methodMissing(String name, args) {
-    if (args.length == 1) {
-      handle(name, convertArg(args[0]))
-    } else {
+    if (args.length <= 0 || args.length > 2) {
       throw new MissingMethodException(name, this.class, args)
     }
+
+    def arguments = Lists.newArrayList(args)
+    arguments.push(convertArg(arguments.pop()))
+    handle(name, *arguments)
   }
 
   def propertyMissing(String name) {
@@ -42,7 +46,13 @@ abstract class AbstractDSL<T> {
     arg as T
   }
 
-  protected abstract handle(String name, T value)
+  protected handle(String name, T value) {
+    throw new MissingMethodException(name, this.class, [value])
+  }
+
+  protected handle(String name, String arg, T value) {
+    throw new MissingMethodException(name, this.class, [arg, value])
+  }
 
   protected abstract handle(String name)
 }

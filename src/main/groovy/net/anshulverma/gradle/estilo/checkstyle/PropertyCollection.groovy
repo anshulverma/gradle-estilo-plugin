@@ -15,41 +15,36 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle
 
+import groovy.util.logging.Slf4j
 import net.anshulverma.gradle.estilo.util.AbstractDSL
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class CheckProperties extends AbstractDSL<String> {
+@Slf4j
+class PropertyCollection extends AbstractDSL<Closure> {
 
-  final String name
+  def collection = []
 
-  Map properties = [:]
-
-  CheckProperties(String name) {
-    super()
-    this.name = name
+  def getLength() {
+    collection.size()
   }
 
   @Override
-  protected handle(String name, String value) {
-    properties[name] = value
+  protected handle(String name, Closure closure) {
+    log.debug('adding custom property named "{}"', name)
+    evaluate(new Properties(), closure).name(name)
   }
 
-  @Override
-  protected convertArg(def arg) {
-    if (arg instanceof List) {
-      arg.join(',')
-    } else {
-      arg.toString()
-    }
+  protected evaluate(properties, closure) {
+    closure.@owner = properties
+    closure()
+    collection.push(properties)
+    properties
   }
 
   @Override
   protected handle(String name) {
-    if (!properties.containsKey(name)) {
-      throw new MissingPropertyException(name, this.class)
-    }
-    properties[name]
+    throw new MissingPropertyException('cannot retrieve properties', name, this.class)
   }
 }

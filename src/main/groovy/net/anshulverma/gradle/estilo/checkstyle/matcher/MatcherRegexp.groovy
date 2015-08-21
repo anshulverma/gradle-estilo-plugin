@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checkstyle.checks
+package net.anshulverma.gradle.estilo.checkstyle.matcher
+
+import groovy.transform.builder.Builder
+import java.util.regex.Pattern
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-public enum CheckType {
+@Builder
+class MatcherRegexp {
 
-  GOOGLE('google_checks.xml'),
-  SUN('sun_checks.xml')
+  MatcherType matcherType
+  String matchParam
+  boolean negative
 
-  final filename
+  def getRegexp() {
+    matcherType.makeRegexp(escape(matchParam), negative)
+  }
 
-  private CheckType(def filename) {
-    this.filename = filename
+  private escape(String str) {
+    Pattern.quote(str)
   }
 }

@@ -15,32 +15,34 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle
 
-import groovy.util.logging.Slf4j
 import net.anshulverma.gradle.estilo.util.AbstractDSL
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@Slf4j
-class CheckCollection extends AbstractDSL<Closure> {
+class Properties extends AbstractDSL<String> {
 
-  def checks = []
+  Map properties = [:]
 
-  def getLength() {
-    checks.size()
+  @Override
+  protected handle(String name, String value) {
+    properties[name] = value
   }
 
   @Override
-  protected handle(String name, Closure closure) {
-    log.debug('adding custom check {}', name)
-    def check = new CheckProperties(name)
-    closure.@owner = check
-    closure()
-    checks.push(check)
+  protected convertArg(def arg) {
+    if (arg instanceof List) {
+      arg.join(',')
+    } else {
+      arg.toString()
+    }
   }
 
   @Override
   protected handle(String name) {
-    throw new MissingPropertyException('cannot retrieve checks by name', name, this.class)
+    if (!properties.containsKey(name)) {
+      throw new MissingPropertyException(name, this.class)
+    }
+    properties[name]
   }
 }
