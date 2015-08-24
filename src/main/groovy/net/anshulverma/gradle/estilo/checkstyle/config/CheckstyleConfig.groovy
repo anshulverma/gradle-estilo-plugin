@@ -15,52 +15,52 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle.config
 
+import groovy.transform.TupleConstructor
+import groovy.transform.TypeChecked
 import groovy.transform.builder.Builder
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlAttribute
-import javax.xml.bind.annotation.XmlElement
-import javax.xml.bind.annotation.XmlRootElement
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
+@TypeChecked
+@TupleConstructor
 class CheckstyleConfig {
 
-  RootModule checker
+  CheckstyleModule checkstyleModule
 
-  def CheckstyleConfig(RootModule checker) {
-    this.checker = checker
+  static CheckstyleConfig buildFrom(ConfigMarshaller.RootModule rootModule) {
+    def checkstyleModule = CheckstyleConfigConverter.convert(rootModule)
+    new CheckstyleConfig(checkstyleModule)
   }
 
-  @XmlAccessorType(XmlAccessType.NONE)
-  @XmlRootElement(name = 'module')
-  static class RootModule extends Module {
-
+  ConfigMarshaller.RootModule toRootModule() {
+    CheckstyleConfigConverter.convert(checkstyleModule)
   }
 
-  @XmlAccessorType(XmlAccessType.NONE)
   @Builder
-  static class Module {
+  static class CheckstyleModule {
 
-    @XmlAttribute
     String name
 
-    @XmlElement(name = 'property')
-    List<Property> properties
+    Map<String, CheckstyleProperty> propertyMap = [:]
 
-    @XmlElement(name = 'module')
-    List<Module> modules
+    Map<String, List<CheckstyleModule>> moduleMap = [:]
+
+    def getId() {
+      if (propertyMap.containsKey('id')) {
+        propertyMap.'id'
+      }
+      name
+    }
+
   }
 
-  @XmlAccessorType(XmlAccessType.NONE)
   @Builder
-  static class Property {
+  static class CheckstyleProperty {
 
-    @XmlAttribute
     String name
 
-    @XmlAttribute
     String value
+
   }
 }

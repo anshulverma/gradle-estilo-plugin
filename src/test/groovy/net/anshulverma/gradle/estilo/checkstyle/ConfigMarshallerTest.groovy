@@ -15,9 +15,10 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle
 
+import static net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller.Module
+import static net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller.Property
+import static net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller.RootModule
 import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig
-import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig.Property
-import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig.Module
 import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
 import net.anshulverma.gradle.estilo.test.AbstractSpecification
 
@@ -31,21 +32,22 @@ class ConfigMarshallerTest extends AbstractSpecification {
       def file = this.class.getResource('/fixtures/checkstyle_test.xml').path as File
 
     when:
-      def checkstyleConfig = ConfigMarshaller.INSTANCE.unmarshal(file)
+      CheckstyleConfig checkstyleConfig = ConfigMarshaller.INSTANCE.unmarshal(file)
 
     then:
-      checkstyleConfig.checker.name == 'Checker'
-      checkstyleConfig.checker.properties.size() == 2
-      checkstyleConfig.checker.modules.size() == 1
-      checkstyleConfig.checker.modules.first().name == 'SuppressionFilter'
-      checkstyleConfig.checker.modules.first().properties.size() == 1
+      checkstyleConfig.checkstyleModule.name == 'Checker'
+      checkstyleConfig.checkstyleModule.propertyMap.size() == 2
+      checkstyleConfig.checkstyleModule.moduleMap.size() == 1
+      checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().key == 'SuppressionFilter'
+      checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.size() == 1
+      checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.propertyMap.size() == 1
   }
 
-  def 'Convert module to string'() {
+  def 'Convert module to to checkstyle config then into xml string'() {
     given:
-      def module = Module.builder()
-                         .name('root')
-                         .properties(
+      Module module = Module.builder()
+                            .name('root')
+                            .properties(
           [
               Property.builder()
                       .name('prop1')
@@ -56,7 +58,7 @@ class ConfigMarshallerTest extends AbstractSpecification {
                       .value('val2')
                       .build()
           ])
-                         .modules(
+                            .modules(
           [
               Module.builder()
                     .name('child1')
@@ -76,14 +78,15 @@ class ConfigMarshallerTest extends AbstractSpecification {
                   ])
                     .build()
           ])
-                         .build()
-      def rootModule = new CheckstyleConfig.RootModule()
+                            .build()
+      def rootModule = new RootModule()
       rootModule.name = module.name
       rootModule.properties = module.properties
       rootModule.modules = module.modules
 
     when:
-      def marshalled = ConfigMarshaller.INSTANCE.marshal(rootModule)
+      CheckstyleConfig checkstyleConfig = CheckstyleConfig.buildFrom(rootModule)
+      def marshalled = ConfigMarshaller.INSTANCE.marshal(checkstyleConfig)
 
     then:
       marshalled == '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

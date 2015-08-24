@@ -15,10 +15,15 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle.config
 
-import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig.RootModule
+import groovy.transform.builder.Builder
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 import javax.xml.bind.Unmarshaller
+import javax.xml.bind.annotation.XmlAccessType
+import javax.xml.bind.annotation.XmlAccessorType
+import javax.xml.bind.annotation.XmlAttribute
+import javax.xml.bind.annotation.XmlElement
+import javax.xml.bind.annotation.XmlRootElement
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
@@ -38,9 +43,10 @@ class ConfigMarshaller {
 
   private ConfigMarshaller() { }
 
-  def marshal(RootModule module) {
+  def marshal(CheckstyleConfig checkstyleConfig) {
     def writer = new StringWriter()
-    MARSHALLER.marshal(module, writer)
+    def rootModule = checkstyleConfig.toRootModule()
+    MARSHALLER.marshal(rootModule, writer)
     return writer.toString()
   }
 
@@ -49,6 +55,38 @@ class ConfigMarshaller {
   }
 
   def unmarshal(InputStream inputStream) {
-    new CheckstyleConfig((RootModule) UNMARSHALLER.unmarshal(inputStream))
+    CheckstyleConfig.buildFrom(UNMARSHALLER.unmarshal(inputStream))
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @XmlRootElement(name = 'module')
+  static class RootModule extends Module {
+
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @Builder
+  static class Module {
+
+    @XmlAttribute
+    String name
+
+    @XmlElement(name = 'property')
+    List<Property> properties
+
+    @XmlElement(name = 'module')
+    List<Module> modules
+
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @Builder
+  static class Property {
+
+    @XmlAttribute
+    String name
+
+    @XmlAttribute
+    String value
   }
 }
