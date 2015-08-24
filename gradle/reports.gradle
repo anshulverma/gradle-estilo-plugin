@@ -2,6 +2,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 coveralls {
   sourceDirs = sourceSets.main.allSource.srcDirs.toList()
+  jacocoReportPath = "${buildDir}/jacoco/test/jacocoTestReport.xml"
 }
 
 tasks.coveralls {
