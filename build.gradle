@@ -1,10 +1,5 @@
-apply plugin: 'groovy'
-apply plugin: 'idea'
-
 group = 'net.anshulverma.gradle'
 version = '0.0.1-SNAPSHOT'
-
-sourceCompatibility = '1.6'
 
 buildscript {
   repositories {
@@ -17,8 +12,26 @@ buildscript {
   }
 }
 
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+compileGroovy {
+  sourceCompatibility = '1.6'
+  targetCompatibility = '1.6'
+}
+
+def javaApiUrl = 'http://docs.oracle.com/javase/1.7.0/docs/api/'
+def groovyApiUrl = 'http://groovy.codehaus.org/gapi/'
+tasks.withType(Javadoc) {
+  options.links(javaApiUrl, groovyApiUrl)
+}
+
 repositories {
   mavenCentral()
+}
+
+task wrapper(type: Wrapper, description: 'Gradle Wrapper task') {
+  gradleVersion = '2.4'
 }
 
 dependencies {
