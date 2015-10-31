@@ -1,19 +1,23 @@
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
 group = 'net.anshulverma.gradle'
-version = '0.0.1-SNAPSHOT'
 
 buildscript {
   repositories {
     jcenter()
+
+    maven {
+      url  "http://dl.bintray.com/anshulverma/gradle-plugins"
+    }
   }
 
   dependencies {
     classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
+    classpath 'net.anshulverma.gradle:gradle-release-plugin:0.2.1'
   }
 }
-
-apply plugin: 'groovy'
-apply plugin: 'idea'
 
 compileGroovy {
   sourceCompatibility = '1.6'
