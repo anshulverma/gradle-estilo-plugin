@@ -12,11 +12,3 @@ tasks.coveralls {
   dependsOn jacocoTestReport
   onlyIf { System.env.'CI' }
 }
-
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
-  classifier = 'javadoc'
-  from groovydoc.destinationDir
-}
-artifacts {
-  archives groovydocJar
-}

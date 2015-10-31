@@ -22,6 +22,15 @@ if (JavaVersion.current().isJava8Compatible()) {
   }
 }
 
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+  classifier = 'javadoc'
+  from groovydoc.destinationDir
+}
+
+artifacts {
+  archives groovydocJar
+}
+
 jar {
   manifest {
     attributes 'Implementation-Title': 'Gradle Estilo plugin',
