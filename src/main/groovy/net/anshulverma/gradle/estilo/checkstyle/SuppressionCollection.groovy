@@ -16,6 +16,7 @@
 package net.anshulverma.gradle.estilo.checkstyle
 
 import groovy.util.logging.Slf4j
+import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
 import net.anshulverma.gradle.estilo.checkstyle.matcher.MatcherRegexp
 import net.anshulverma.gradle.estilo.checkstyle.matcher.MatcherType
 
@@ -51,5 +52,23 @@ class SuppressionCollection extends PropertyCollection {
     properties.files(matcher.regexp.toString())
     evaluate(properties, closure)
     properties
+  }
+
+  ConfigMarshaller.Suppressions toSuppressions() {
+    List<ConfigMarshaller.SuppressedCheck> suppressedChecks = []
+    each {
+      def properties = it.properties
+      ConfigMarshaller.SuppressedCheck suppressedCheck = ConfigMarshaller.SuppressedCheck.builder()
+                                                                         .id(properties.id)
+                                                                         .checks(properties.checks)
+                                                                         .files(properties.files)
+                                                                         .lines(properties.lines)
+                                                                         .columns(properties.columns)
+                                                                         .build()
+      suppressedChecks.add(suppressedCheck)
+    }
+    ConfigMarshaller.Suppressions.builder()
+                    .suppressedChecks(suppressedChecks)
+                    .build()
   }
 }

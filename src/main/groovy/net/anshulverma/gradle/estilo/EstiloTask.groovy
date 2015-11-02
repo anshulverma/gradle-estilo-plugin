@@ -15,7 +15,10 @@
  */
 package net.anshulverma.gradle.estilo
 
+import groovy.util.logging.Slf4j
+import net.anshulverma.gradle.estilo.checkstyle.CustomOptions
 import net.anshulverma.gradle.estilo.checkstyle.PropertyCollection
+import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFileLoader
 import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig
 import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
@@ -27,6 +30,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
+@Slf4j
 class EstiloTask extends DefaultTask {
 
   String checkstyleConfigDir
@@ -45,6 +49,12 @@ class EstiloTask extends DefaultTask {
   def execute(EstiloExtension settings) {
     CheckstyleConfig config = new ConfigFileLoader(settings.baseChecks).load()
     extendChecks(config, settings.checkCollection)
+    if (settings.hasSuppressions()) {
+      createSupressionsConfig(settings.suppressionCollection)
+      config.extend('SuppressionFilter',
+                    CustomOptions.fromHash([override: true]),
+                    [file: "$checkstyleConfigDir/suppressions.xml"])
+    }
     createCheckstyleConfig(config)
     createCheckstyleXSL()
   }
@@ -61,11 +71,23 @@ class EstiloTask extends DefaultTask {
   private createCheckstyleConfig(CheckstyleConfig config) {
     def source = ConfigMarshaller.INSTANCE.marshal(config)
     def destination = "$checkstyleConfigDir/checkstyle.xml"
+    writeToFile(source, destination)
+  }
+
+  private createSupressionsConfig(SuppressionCollection suppressionCollection) {
+    def source = ConfigMarshaller.INSTANCE.marshal(suppressionCollection)
+    def destination = "$checkstyleConfigDir/suppressions.xml"
+    writeToFile(source, destination)
+  }
+
+  private writeToFile(String source, String destination) {
     FileCopyUtil.copyStringToFile(source, destination)
+    log.debug("wrote contents to file $destination")
   }
 
   private createCheckstyleXSL() {
     FileUtils.copyURLToFile(getClass().getResource('/config/checkstyle.xsl'),
                             "$checkstyleConfigDir/checkstyle.xsl" as File)
+    log.debug('checkstyle.xsl created')
   }
 }

@@ -65,6 +65,79 @@ class EstiloTaskTest extends AbstractSpecification {
       CheckType.SUN    | [124, -99, 69, -22, 64, 85, 118, 17, -83, -38, -81, -93, -28, 121, 99, -34]
   }
 
+  def 'test suppressions should add a suppression filter module'() {
+
+    given:
+      def project = singleJavaProject()
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
+      def extension = new EstiloExtension()
+      def closure = {
+        source 'google'
+
+        checks {
+          DescendantToken {
+            id 'switchNoDefault'
+            tokens 'LITERAL_SWITCH'
+            limitedTokens 'LITERAL_DEFAULT'
+            maximumNumber 2
+            maximumDepth 1
+          }
+        }
+
+        suppressions {
+          suffix 'Test.java', {
+            checks 'LineLength'
+            lines '23, 34, 45'
+            columns([34, 56, 67])
+          }
+          suffix.not 'Test.java', {
+            id 'javadoc'
+          }
+          prefix 'Draft', {
+            checks 'Indentation'
+          }
+          prefix.not 'Draft', {
+            id 'draftHeader'
+          }
+          contains 'Algorithm', {
+            checks 'LineLength'
+          }
+          contains.not 'Test.java', {
+            id 'classJavaDoc'
+          }
+        }
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+      EstiloTask estiloTask = project.getTasksByName('estilo', true)[0]
+      estiloTask.execute(extension)
+
+    then:
+      def expectedCheckstylePath = "${project.rootDir}/build/estilo/checkstyle.xml"
+      def expectedSuppressionsPath = "${project.rootDir}/build/estilo/suppressions.xml"
+      FileUtils.fileExists(expectedCheckstylePath)
+      new File(expectedCheckstylePath).text.contains """<module name="SuppressionFilter">
+        <property name="file" value="$expectedSuppressionsPath"/>
+    </module>
+"""
+      FileUtils.fileExists(expectedSuppressionsPath)
+      new File(expectedSuppressionsPath).text == '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<suppressions>
+    <suppress columns="34,56,67" lines="23, 34, 45" files=".*\\QTest.java\\E" checks="LineLength"/>
+    <suppress files=".*(?&lt;!\\QTest.java\\E)$" id="javadoc"/>
+    <suppress files="\\QDraft\\E.*" checks="Indentation"/>
+    <suppress files="^(?!\\QDraft\\E).*$" id="draftHeader"/>
+    <suppress files=".*\\QAlgorithm\\E.*" checks="LineLength"/>
+    <suppress files="^((?!\\QTest.java\\E).)*$" id="classJavaDoc"/>
+</suppressions>
+'''
+  }
+
   def fileHash(File file) {
     MessageDigest messageDigest = MessageDigest.getInstance('MD5')
     DigestInputStream inputStream = new DigestInputStream(new FileInputStream(file), messageDigest)

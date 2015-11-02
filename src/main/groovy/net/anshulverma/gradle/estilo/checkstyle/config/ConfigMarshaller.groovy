@@ -16,6 +16,7 @@
 package net.anshulverma.gradle.estilo.checkstyle.config
 
 import groovy.transform.builder.Builder
+import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 import javax.xml.bind.Unmarshaller
@@ -31,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement
 class ConfigMarshaller {
 
   private static final Marshaller MARSHALLER =
-      JAXBContext.newInstance(RootModule).createMarshaller()
+      JAXBContext.newInstance(RootModule, Suppressions).createMarshaller()
   private static final Unmarshaller UNMARSHALLER =
       JAXBContext.newInstance(RootModule).createUnmarshaller()
   private static final String JAXB_XML_HEADERS = 'com.sun.xml.bind.xmlHeaders'
@@ -54,9 +55,24 @@ class ConfigMarshaller {
 
   def marshal(CheckstyleConfig checkstyleConfig) {
     def writer = new StringWriter()
-    def rootModule = checkstyleConfig.toRootModule()
-    MARSHALLER.marshal(rootModule, writer)
-    return writer.toString()[UNWANTED_HEADER_LENGTH..-1]
+    MARSHALLER.marshal(checkstyleConfig.toRootModule(), writer)
+    removeUnwantedHeader(writer.toString())
+  }
+
+  def marshal(SuppressionCollection suppressionCollection) {
+    def writer = new StringWriter()
+    MARSHALLER.marshal(suppressionCollection.toSuppressions(), writer)
+
+    // seems like there is no way to unescape &amp; easily
+    unescapeAmpersand(removeUnwantedHeader(writer.toString()))
+  }
+
+  private String unescapeAmpersand(String escaped) {
+    escaped.replaceAll('\\(\\?\\&amp;lt;', '(?&lt;')
+  }
+
+  private String removeUnwantedHeader(String marshalled) {
+    marshalled[UNWANTED_HEADER_LENGTH..-1]
   }
 
   CheckstyleConfig unmarshal(File file) {
@@ -97,5 +113,34 @@ class ConfigMarshaller {
 
     @XmlAttribute
     String name
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @XmlRootElement(name = 'suppressions')
+  @Builder
+  static class Suppressions {
+
+    @XmlElement(name = 'suppress')
+    List<SuppressedCheck> suppressedChecks
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @Builder
+  static class SuppressedCheck {
+
+    @XmlAttribute
+    String id
+
+    @XmlAttribute
+    String checks
+
+    @XmlAttribute
+    String files
+
+    @XmlAttribute
+    String lines
+
+    @XmlAttribute
+    String columns
   }
 }

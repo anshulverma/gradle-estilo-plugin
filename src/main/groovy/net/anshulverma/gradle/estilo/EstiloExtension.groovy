@@ -42,6 +42,10 @@ class EstiloExtension {
     suppressionCollection = evaluate('suppressions', new SuppressionCollection(), closure)
   }
 
+  boolean hasSuppressions() {
+    suppressionCollection != null && suppressionCollection.length > 0
+  }
+
   private def evaluate(name, collection, closure) {
     closure.delegate = collection
     closure()

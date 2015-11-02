@@ -30,7 +30,7 @@ class CheckstyleConfigTest extends AbstractSpecification {
 
     when:
       checkstyleConfig.extend('RegexpHeader', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
-      checkstyleConfig.extend('SuppressionFilter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
+      checkstyleConfig.extend('SeverityMatchFilter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
       checkstyleConfig.extend('MethodCount', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
       checkstyleConfig.extend('FileTabCharacter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2', eachLine: 'false'])
       checkstyleConfig.extend('NewlineAtEndOfFile', CustomOptions.fromHash([override: true]), [p1: 'v1', p2: 'v2'])
@@ -45,8 +45,8 @@ class CheckstyleConfigTest extends AbstractSpecification {
 <module name="Checker">
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
-    <module name="SuppressionFilter">
-        <property name="file" value="/config/checkstyle/suppressions.xml"/>
+    <module name="SeverityMatchFilter">
+        <property name="matcher" value="abcd"/>
         <property name="p1" value="v1"/>
         <property name="p2" value="v2"/>
     </module>
