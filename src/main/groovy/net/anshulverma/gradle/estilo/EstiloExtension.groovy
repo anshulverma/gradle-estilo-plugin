@@ -26,7 +26,7 @@ import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 @Slf4j
 class EstiloExtension {
 
-  CheckType baseChecks
+  CheckType baseChecks = CheckType.GOOGLE
   PropertyCollection checkCollection
   PropertyCollection suppressionCollection
 

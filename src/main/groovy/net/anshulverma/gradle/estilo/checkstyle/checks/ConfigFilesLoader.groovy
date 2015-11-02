@@ -24,15 +24,28 @@ import org.apache.commons.io.FileUtils
  */
 @TypeChecked
 @TupleConstructor
-class ConfigFileLoader {
+class ConfigFilesLoader {
 
   CheckType checkType
   String configDir
 
   def load() {
-    def url = this.getClass().getResource("/${checkType.filename}")
-    def file = new File("$configDir/checkstyle.xml")
+    loadXSL()
+    loadRules()
+  }
+
+  def loadRules() {
+    loadResource("/${checkType.filename}", "$configDir/checkstyle.xml")
+  }
+
+  def loadXSL() {
+    loadResource('/config/checkstyle.xsl', "$configDir/checkstyle.xsl")
+  }
+
+  def loadResource(String resource, String destination) {
+    def url = this.getClass().getResource(resource)
+    def file = new File(destination)
     FileUtils.copyURLToFile(url, file)
-    return file
+    file
   }
 }

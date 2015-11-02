@@ -45,6 +45,14 @@ class EstiloPlugin implements Plugin<Project> {
 
     project.tasks.withType(Checkstyle) {
       dependsOn 'estilo'
+      enabled = project.hasProperty('checkstyle') && 'disable' != (project.property('checkstyle'))
+      group = 'Checkstyle'
+
+      doLast {
+        ant.xslt(in: "${buildDir}/main.xml",
+                 style: "//${buildDir}/checkstyle.xsl",
+                 out: "${buildDir}/report.html")
+      }
     }
 
     project.checkstyle {
@@ -53,6 +61,7 @@ class EstiloPlugin implements Plugin<Project> {
       sourceSets = [sourceSets.main, sourceSets.test]
       toolVersion = '6.7'
       configFile = "$buildDir/checkstyle.xml" as File
+      reportsDir = buildDir as File
     }
   }
 }

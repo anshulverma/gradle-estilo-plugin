@@ -30,7 +30,7 @@ class FileLoaderTest extends AbstractSpecification {
   def 'Load checks file'() {
     given:
       def project = singleJavaProject()
-      def loader = new ConfigFileLoader(checkType, "$project.rootDir/build/estilo")
+      def loader = new ConfigFilesLoader(checkType, "$project.rootDir/build/estilo")
 
     when:
       project.apply plugin: 'net.anshulverma.gradle.estilo'

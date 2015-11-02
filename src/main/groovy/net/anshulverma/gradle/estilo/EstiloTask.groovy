@@ -16,7 +16,7 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.transform.TypeChecked
-import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFileLoader
+import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFilesLoader
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -26,7 +26,7 @@ import org.gradle.api.tasks.TaskAction
 @TypeChecked
 class EstiloTask extends DefaultTask {
 
-  private String checkstyleConfigDir
+  String checkstyleConfigDir
 
   EstiloTask() {
     description = 'Manages checkstyle checkers for this project.'
@@ -37,14 +37,6 @@ class EstiloTask extends DefaultTask {
   def run() {
     def project = getProject()
     def settings = (EstiloExtension) project.getExtensions().findByName('estilo')
-    new ConfigFileLoader(settings.baseChecks, getCheckstyleConfigDir()).load()
-  }
-
-  String getCheckstyleConfigDir() {
-    System.properties.get('checkstyleConfigDir', checkstyleConfigDir)
-  }
-
-  def setCheckstyleConfigDir(String checkstyleConfigDir) {
-    this.checkstyleConfigDir = checkstyleConfigDir
+    new ConfigFilesLoader(settings.baseChecks, checkstyleConfigDir).load()
   }
 }
