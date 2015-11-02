@@ -16,15 +16,17 @@
 package net.anshulverma.gradle.estilo.checkstyle.config
 
 import groovy.transform.TupleConstructor
-import groovy.transform.TypeChecked
 import groovy.transform.builder.Builder
+import net.anshulverma.gradle.estilo.checkstyle.CheckstyleContext
+import net.anshulverma.gradle.estilo.checkstyle.DefaultCheckstyleContext
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@TypeChecked
 @TupleConstructor
 class CheckstyleConfig {
+
+  private final CheckstyleContext checkstyleContext = new DefaultCheckstyleContext()
 
   CheckstyleModule checkstyleModule
 
@@ -35,6 +37,27 @@ class CheckstyleConfig {
 
   ConfigMarshaller.RootModule toRootModule() {
     CheckstyleConfigConverter.convert(checkstyleModule)
+  }
+
+  def extend(String name, Map<String, String> properties) {
+    def parentModule = getParentModule(name)
+    def id = properties['id'] ? properties['id'] : name
+    CheckstyleModule subModule = parentModule.getOrCreate(id, name)
+    properties.each { key, value ->
+      subModule.propertyMap[key] = CheckstyleProperty.from(key, value)
+    }
+    subModule.name = name
+    subModule
+  }
+
+  private getParentModule(String name) {
+    if (checkstyleContext.isRootCheck(name)) {
+      checkstyleModule
+    } else if (checkstyleContext.isTreeWalkerCheck(name)) {
+      checkstyleModule.getOrCreate('TreeWalker')
+    } else {
+      throw new IllegalArgumentException("no parent module exists for $name type check")
+    }
   }
 
   @Builder
@@ -53,14 +76,30 @@ class CheckstyleConfig {
       name
     }
 
+    CheckstyleModule getOrCreate(String id, String name = id) {
+      if (!moduleMap.containsKey(id)) {
+        moduleMap[id] = []
+      }
+      if (moduleMap[id].isEmpty()) {
+        def module = new CheckstyleModule()
+        module.name = name
+        moduleMap[id] << module
+        return module
+      }
+      moduleMap[id].first()
+    }
   }
 
   @Builder
+  @TupleConstructor
   static class CheckstyleProperty {
 
     String name
 
     String value
 
+    static from(String name, String value) {
+      new CheckstyleProperty(name, value)
+    }
   }
 }

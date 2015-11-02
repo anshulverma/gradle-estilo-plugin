@@ -68,6 +68,7 @@ ruleset {
   }
   ruleset('rulesets/security.xml') {
     JavaIoPackageAccess(enabled: false) // gradle uses Java.io.File
+    FileCreateTempFile(enabled: false)
   }
   ruleset('rulesets/serialization.xml')
 

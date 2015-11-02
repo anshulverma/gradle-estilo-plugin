@@ -37,8 +37,15 @@ dependencies {
   compile 'commons-io:commons-io:2.4'
   compile 'javax.xml:jaxb-api:2.1'
   compile 'javax.xml:jaxb-impl:2.1'
+  compile 'com.thoughtworks.xstream:xstream:1.4.7'
 
-  compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.7'
+  // to be able to parse all checks we need to include transitive dependencies from checkstyle
+  testCompile 'org.reflections:reflections:0.9.10'
+  testCompile 'org.apache.commons:commons-lang3:3.4'
+  testCompile 'commons-beanutils:commons-beanutils:1.9.2'
+  testCompile 'antlr:antlr:2.7.7'
+  testCompile 'org.antlr:antlr4-runtime:4.5.1-1'
+
   testCompile('org.spockframework:spock-core:0.7-groovy-2.0') {
     exclude(module: 'groovy-all')
   }

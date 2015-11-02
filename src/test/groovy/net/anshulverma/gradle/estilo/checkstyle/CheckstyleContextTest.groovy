@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checkstyle.checks
+package net.anshulverma.gradle.estilo.checkstyle
+
+import net.anshulverma.gradle.estilo.test.AbstractSpecification
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-public enum CheckType {
+class CheckstyleContextTest extends AbstractSpecification {
 
-  GOOGLE('google_checks.xml'),
-  SUN('sun_checks.xml')
+  def 'test all checks from classpath are loaded'() {
+    when:
+      def checkContextFromDump = new DefaultCheckstyleContext()
+      def checkContextFromClasspath = new TestCheckstyleContext()
 
-  final String filename
-
-  private CheckType(def filename) {
-    this.filename = filename
+    then:
+      checkContextFromDump.rootCheckerChecks.containsAll(checkContextFromClasspath.rootCheckerChecks)
+      checkContextFromDump.treeWalkerChecks.containsAll(checkContextFromClasspath.treeWalkerChecks)
   }
 }

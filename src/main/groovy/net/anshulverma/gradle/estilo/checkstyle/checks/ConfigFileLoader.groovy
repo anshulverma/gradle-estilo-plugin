@@ -17,6 +17,8 @@ package net.anshulverma.gradle.estilo.checkstyle.checks
 
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
+import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig
+import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
 import org.apache.commons.io.FileUtils
 
 /**
@@ -24,28 +26,17 @@ import org.apache.commons.io.FileUtils
  */
 @TypeChecked
 @TupleConstructor
-class ConfigFilesLoader {
+class ConfigFileLoader {
 
   CheckType checkType
-  String configDir
 
-  def load() {
-    loadXSL()
-    loadRules()
+  CheckstyleConfig load() {
+    loadResource("/${checkType.filename}")
   }
 
-  def loadRules() {
-    loadResource("/${checkType.filename}", "$configDir/checkstyle.xml")
-  }
-
-  def loadXSL() {
-    loadResource('/config/checkstyle.xsl', "$configDir/checkstyle.xsl")
-  }
-
-  def loadResource(String resource, String destination) {
-    def url = this.getClass().getResource(resource)
-    def file = new File(destination)
-    FileUtils.copyURLToFile(url, file)
-    file
+  private CheckstyleConfig loadResource(String resource) {
+    File tmpFile = File.createTempFile('checkstyle', checkType.filename)
+    FileUtils.copyURLToFile(this.getClass().getResource(resource), tmpFile)
+    ConfigMarshaller.INSTANCE.unmarshal(tmpFile)
   }
 }

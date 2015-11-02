@@ -37,7 +37,7 @@ class ConfigMarshallerTest extends AbstractSpecification {
     then:
       checkstyleConfig.checkstyleModule.name == 'Checker'
       checkstyleConfig.checkstyleModule.propertyMap.size() == 2
-      checkstyleConfig.checkstyleModule.moduleMap.size() == 1
+      checkstyleConfig.checkstyleModule.moduleMap.size() == 2
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().key == 'SuppressionFilter'
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.size() == 1
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.propertyMap.size() == 1
@@ -89,14 +89,17 @@ class ConfigMarshallerTest extends AbstractSpecification {
       def marshalled = ConfigMarshaller.INSTANCE.marshal(checkstyleConfig)
 
     then:
-      marshalled == '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      marshalled == '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="root">
-    <property value="val1" name="prop1"/>
-    <property value="val2" name="prop2"/>
+    <property name="prop1" value="val1"/>
+    <property name="prop2" value="val2"/>
     <module name="child1"/>
     <module name="child1">
-        <property value="val3" name="prop3"/>
-        <property value="val4" name="prop4"/>
+        <property name="prop3" value="val3"/>
+        <property name="prop4" value="val4"/>
     </module>
 </module>
 '''

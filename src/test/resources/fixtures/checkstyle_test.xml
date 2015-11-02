@@ -6,6 +6,9 @@
   <property name="charset" value="UTF-8"/>
   <property name="severity" value="warning"/>
   <module name="SuppressionFilter">
-    <property name="file" value="${basedir}/config/checkstyle/suppressions.xml"/>
+    <property name="file" value="/config/checkstyle/suppressions.xml"/>
+  </module>
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true"/>
   </module>
 </module>

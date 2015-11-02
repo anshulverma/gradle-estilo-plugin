@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checkstyle.checks
+package net.anshulverma.gradle.estilo
 
-import net.anshulverma.gradle.estilo.EstiloExtension
-import net.anshulverma.gradle.estilo.EstiloTask
+import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 import net.anshulverma.gradle.estilo.test.AbstractSpecification
 import org.apache.commons.io.IOUtils
 import org.codehaus.plexus.util.FileUtils
@@ -27,19 +26,33 @@ import java.security.MessageDigest
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class FileLoaderTest extends AbstractSpecification {
+class EstiloTaskTest extends AbstractSpecification {
 
-  @Unroll('load #checkType checks')
-  def 'Load checks file'() {
+  @Unroll
+  def 'test loading and extending #checkType checks'() {
     given:
       def project = singleJavaProject()
       project.apply plugin: 'net.anshulverma.gradle.estilo'
-      def settings = new EstiloExtension()
-      settings.baseChecks = checkType
+      def extension = new EstiloExtension()
+      def closure = {
+        source checkType.name()
+
+        checks {
+          DescendantToken {
+            id 'switchNoDefault'
+            tokens 'LITERAL_SWITCH'
+            limitedTokens 'LITERAL_DEFAULT'
+            maximumNumber 2
+            maximumDepth 1
+          }
+        }
+      }
+      closure.delegate = extension
 
     when:
+      closure()
       EstiloTask estiloTask = project.getTasksByName('estilo', true)[0]
-      estiloTask.execute(settings)
+      estiloTask.execute(extension)
 
     then:
       def expectedCheckstylePath = "${project.rootDir}/build/estilo/checkstyle.xml"
@@ -48,8 +61,8 @@ class FileLoaderTest extends AbstractSpecification {
 
     where:
       checkType        | hash
-      CheckType.GOOGLE | [-107, -45, 71, 124, 50, 103, -47, 32, -74, 58, -63, -23, 56, 8, -56, 122]
-      CheckType.SUN    | [118, -45, -18, 87, 12, 27, -77, 123, -122, -14, -128, -107, 121, -53, 119, -29]
+      CheckType.GOOGLE | [-62, 6, -40, 36, -31, -5, -56, 11, 119, 5, 18, -89, -84, 39, -71, 75]
+      CheckType.SUN    | [124, -99, 69, -22, 64, 85, 118, 17, -83, -38, -81, -93, -28, 121, 99, -34]
   }
 
   def fileHash(File file) {

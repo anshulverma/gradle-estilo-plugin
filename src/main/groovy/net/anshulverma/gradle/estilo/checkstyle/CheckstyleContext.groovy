@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.anshulverma.gradle.estilo.checkstyle.checks
+package net.anshulverma.gradle.estilo.checkstyle
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-public enum CheckType {
+interface CheckstyleContext {
 
-  GOOGLE('google_checks.xml'),
-  SUN('sun_checks.xml')
+  boolean isRootCheck(String name)
 
-  final String filename
+  boolean isTreeWalkerCheck(String name)
 
-  private CheckType(def filename) {
-    this.filename = filename
-  }
 }

@@ -16,39 +16,27 @@
 package net.anshulverma.gradle.estilo.checkstyle
 
 import groovy.util.logging.Slf4j
-import net.anshulverma.gradle.estilo.util.AbstractDSL
+import org.apache.commons.io.IOUtils
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
 @Slf4j
-class PropertyCollection extends AbstractDSL<Closure> {
+class DefaultCheckstyleContext extends AbstractCheckstyleContext {
 
-  def collection = []
-
-  def getLength() {
-    collection.size()
+  DefaultCheckstyleContext() {
+    loadChecksFromDump()
   }
 
-  def each(Closure closure) {
-    collection.each(closure)
+  private def loadChecksFromDump() {
+    rootCheckerChecks.addAll(loadChecksFromResource('/config/root-checker-checks.csv'))
+    treeWalkerChecks.addAll(loadChecksFromResource('/config/tree-walker-checks.csv'))
   }
 
-  @Override
-  protected handle(String name, Closure closure) {
-    log.debug('adding custom property named "{}"', name)
-    evaluate(new Properties(), closure).name(name)
-  }
-
-  protected evaluate(properties, closure) {
-    closure.@owner = properties
-    closure()
-    collection.push(properties)
-    properties
-  }
-
-  @Override
-  protected handle(String name) {
-    throw new MissingPropertyException('cannot retrieve properties', name, this.class)
+  private def loadChecksFromResource(String path) {
+    def checksStream = getClass().getResourceAsStream(path)
+    IOUtils.toString(checksStream).split(',').inject([]) { result, check ->
+      result << check.trim()
+    }
   }
 }

@@ -15,15 +15,18 @@
  */
 package net.anshulverma.gradle.estilo
 
-import groovy.transform.TypeChecked
-import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFilesLoader
+import net.anshulverma.gradle.estilo.checkstyle.PropertyCollection
+import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFileLoader
+import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig
+import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
+import net.anshulverma.gradle.estilo.util.FileCopyUtil
+import org.apache.commons.io.FileUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-@TypeChecked
 class EstiloTask extends DefaultTask {
 
   String checkstyleConfigDir
@@ -35,8 +38,33 @@ class EstiloTask extends DefaultTask {
 
   @TaskAction
   def run() {
-    def project = getProject()
     def settings = (EstiloExtension) project.getExtensions().findByName('estilo')
-    new ConfigFilesLoader(settings.baseChecks, checkstyleConfigDir).load()
+    execute(settings)
+  }
+
+  def execute(EstiloExtension settings) {
+    CheckstyleConfig config = new ConfigFileLoader(settings.baseChecks).load()
+    extendChecks(config, settings.checkCollection)
+    createCheckstyleConfig(config)
+    createCheckstyleXSL()
+  }
+
+  private extendChecks(CheckstyleConfig config, PropertyCollection checks) {
+    checks.each {
+      def properties = it.properties
+      def name = properties.remove('name')
+      config.extend(name, properties)
+    }
+  }
+
+  private createCheckstyleConfig(CheckstyleConfig config) {
+    def source = ConfigMarshaller.INSTANCE.marshal(config)
+    def destination = "$checkstyleConfigDir/checkstyle.xml"
+    FileCopyUtil.copyStringToFile(source, destination)
+  }
+
+  private createCheckstyleXSL() {
+    FileUtils.copyURLToFile(getClass().getResource('/config/checkstyle.xsl'),
+                            "$checkstyleConfigDir/checkstyle.xsl" as File)
   }
 }

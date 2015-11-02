@@ -34,11 +34,20 @@ class ConfigMarshaller {
       JAXBContext.newInstance(RootModule).createMarshaller()
   private static final Unmarshaller UNMARSHALLER =
       JAXBContext.newInstance(RootModule).createUnmarshaller()
+  private static final String JAXB_XML_HEADERS = 'com.sun.xml.bind.xmlHeaders'
+  private static final UNWANTED_HEADER_LENGTH =
+      '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.length() + 1
 
   static final ConfigMarshaller INSTANCE = new ConfigMarshaller()
 
   static {
-    MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+    MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE)
+    MARSHALLER.setProperty(JAXB_XML_HEADERS,
+                           '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+''')
   }
 
   private ConfigMarshaller() { }
@@ -47,14 +56,14 @@ class ConfigMarshaller {
     def writer = new StringWriter()
     def rootModule = checkstyleConfig.toRootModule()
     MARSHALLER.marshal(rootModule, writer)
-    return writer.toString()
+    return writer.toString()[UNWANTED_HEADER_LENGTH..-1]
   }
 
-  def unmarshal(File file) {
+  CheckstyleConfig unmarshal(File file) {
     unmarshal(new FileInputStream(file))
   }
 
-  def unmarshal(InputStream inputStream) {
+  CheckstyleConfig unmarshal(InputStream inputStream) {
     CheckstyleConfig.buildFrom(UNMARSHALLER.unmarshal(inputStream))
   }
 
@@ -84,9 +93,9 @@ class ConfigMarshaller {
   static class Property {
 
     @XmlAttribute
-    String name
+    String value
 
     @XmlAttribute
-    String value
+    String name
   }
 }
