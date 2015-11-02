@@ -15,40 +15,19 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle
 
-import net.anshulverma.gradle.estilo.util.AbstractDSL
+import groovy.transform.builder.Builder
 
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-class Properties extends AbstractDSL<String> {
+@Builder
+class CustomOptions {
 
-  final CustomOptions customOptions
+  boolean override
 
-  Map properties = [:]
-
-  Properties(Map options) {
-    customOptions = CustomOptions.fromHash(options)
-  }
-
-  @Override
-  protected handle(String name, String value) {
-    properties[name] = value
-  }
-
-  @Override
-  protected convertArg(def arg) {
-    if (arg instanceof List) {
-      arg.join(',')
-    } else {
-      arg.toString()
-    }
-  }
-
-  @Override
-  protected handle(String name) {
-    if (!properties.containsKey(name)) {
-      throw new MissingPropertyException(name, this.class)
-    }
-    properties[name]
+  static fromHash(Map options) {
+    CustomOptions.builder()
+                 .override(options['override'] ? options['override'] : false)
+                 .build()
   }
 }

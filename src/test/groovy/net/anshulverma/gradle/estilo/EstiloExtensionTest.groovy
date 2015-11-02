@@ -76,7 +76,7 @@ class EstiloExtensionTest extends AbstractSpecification {
       def extension = new EstiloExtension()
       def closure = {
         checks {
-          DescendantToken {
+          DescendantToken(override: true) {
             id 'stringEqual'
             tokens 'EQUAL,NOT_EQUAL'
             limitedTokens 'STRING_LITERAL'
@@ -109,6 +109,7 @@ class EstiloExtensionTest extends AbstractSpecification {
       check1.limitedTokens == 'STRING_LITERAL'
       check1.maximumNumber == '0'
       check1.maximumDepth == '1'
+      check1.customOptions.override == true
 
       check2.name == 'DescendantToken'
       check2.id == 'switchNoDefault'
@@ -116,6 +117,7 @@ class EstiloExtensionTest extends AbstractSpecification {
       check2.limitedTokens == 'LITERAL_DEFAULT'
       check2.maximumNumber == '2'
       check2.maximumDepth == '1'
+      check2.customOptions.override == false
   }
 
   def 'No suppressions and checks are added by default'() {

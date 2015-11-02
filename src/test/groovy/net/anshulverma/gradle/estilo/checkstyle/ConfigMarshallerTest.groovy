@@ -37,7 +37,7 @@ class ConfigMarshallerTest extends AbstractSpecification {
     then:
       checkstyleConfig.checkstyleModule.name == 'Checker'
       checkstyleConfig.checkstyleModule.propertyMap.size() == 2
-      checkstyleConfig.checkstyleModule.moduleMap.size() == 2
+      checkstyleConfig.checkstyleModule.moduleMap.size() == 3
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().key == 'SuppressionFilter'
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.size() == 1
       checkstyleConfig.checkstyleModule.moduleMap.entrySet().first().value.propertyMap.size() == 1

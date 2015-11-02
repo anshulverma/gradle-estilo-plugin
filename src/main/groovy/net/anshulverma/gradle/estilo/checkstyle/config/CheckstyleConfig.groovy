@@ -18,6 +18,7 @@ package net.anshulverma.gradle.estilo.checkstyle.config
 import groovy.transform.TupleConstructor
 import groovy.transform.builder.Builder
 import net.anshulverma.gradle.estilo.checkstyle.CheckstyleContext
+import net.anshulverma.gradle.estilo.checkstyle.CustomOptions
 import net.anshulverma.gradle.estilo.checkstyle.DefaultCheckstyleContext
 
 /**
@@ -39,10 +40,13 @@ class CheckstyleConfig {
     CheckstyleConfigConverter.convert(checkstyleModule)
   }
 
-  def extend(String name, Map<String, String> properties) {
+  def extend(String name, CustomOptions options, Map<String, String> properties) {
     def parentModule = getParentModule(name)
     def id = properties['id'] ? properties['id'] : name
     CheckstyleModule subModule = parentModule.getOrCreate(id, name)
+    if (options.override) {
+      subModule.propertyMap = [:]
+    }
     properties.each { key, value ->
       subModule.propertyMap[key] = CheckstyleProperty.from(key, value)
     }

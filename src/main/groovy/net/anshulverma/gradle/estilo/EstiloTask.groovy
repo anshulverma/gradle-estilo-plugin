@@ -52,8 +52,9 @@ class EstiloTask extends DefaultTask {
   private extendChecks(CheckstyleConfig config, PropertyCollection checks) {
     checks.each {
       def properties = it.properties
+      def options = it.customOptions
       def name = properties.remove('name')
-      config.extend(name, properties)
+      config.extend(name, options, properties)
     }
   }
 

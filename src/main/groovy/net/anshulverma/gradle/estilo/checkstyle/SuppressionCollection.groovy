@@ -47,7 +47,7 @@ class SuppressionCollection extends PropertyCollection {
   }
 
   private addSuppression(matcher, closure) {
-    def properties = new Properties()
+    def properties = new Properties([:])
     properties.files(matcher.regexp.toString())
     evaluate(properties, closure)
     properties

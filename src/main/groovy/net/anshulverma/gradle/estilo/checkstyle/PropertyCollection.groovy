@@ -36,8 +36,12 @@ class PropertyCollection extends AbstractDSL<Closure> {
 
   @Override
   protected handle(String name, Closure closure) {
+    handle(name, [:], closure)
+  }
+
+  protected handle(String name, Map options, Closure closure) {
     log.debug('adding custom property named "{}"', name)
-    evaluate(new Properties(), closure).name(name)
+    evaluate(new Properties(options), closure).name(name)
   }
 
   protected evaluate(properties, closure) {

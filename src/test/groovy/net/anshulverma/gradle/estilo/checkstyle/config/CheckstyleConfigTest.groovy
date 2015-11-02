@@ -15,6 +15,7 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle.config
 
+import net.anshulverma.gradle.estilo.checkstyle.CustomOptions
 import net.anshulverma.gradle.estilo.test.AbstractSpecification
 
 /**
@@ -28,10 +29,11 @@ class CheckstyleConfigTest extends AbstractSpecification {
       CheckstyleConfig checkstyleConfig = ConfigMarshaller.INSTANCE.unmarshal(file)
 
     when:
-      checkstyleConfig.extend('RegexpHeader', [p1: 'v1', p2: 'v2'])
-      checkstyleConfig.extend('SuppressionFilter', [p1: 'v1', p2: 'v2'])
-      checkstyleConfig.extend('MethodCount', [p1: 'v1', p2: 'v2'])
-      checkstyleConfig.extend('FileTabCharacter', [p1: 'v1', p2: 'v2', eachLine: 'false'])
+      checkstyleConfig.extend('RegexpHeader', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
+      checkstyleConfig.extend('SuppressionFilter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
+      checkstyleConfig.extend('MethodCount', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
+      checkstyleConfig.extend('FileTabCharacter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2', eachLine: 'false'])
+      checkstyleConfig.extend('NewlineAtEndOfFile', CustomOptions.fromHash([override: true]), [p1: 'v1', p2: 'v2'])
       def marshalled = ConfigMarshaller.INSTANCE.marshal(checkstyleConfig)
 
     then:
@@ -49,6 +51,10 @@ class CheckstyleConfigTest extends AbstractSpecification {
     </module>
     <module name="FileTabCharacter">
         <property name="eachLine" value="false"/>
+        <property name="p1" value="v1"/>
+        <property name="p2" value="v2"/>
+    </module>
+    <module name="NewlineAtEndOfFile">
         <property name="p1" value="v1"/>
         <property name="p2" value="v2"/>
     </module>
