@@ -43,6 +43,10 @@ class CheckstyleConfig {
   def extend(String name, CustomOptions options, Map<String, String> properties) {
     def parentModule = getParentModule(name)
     def id = properties['id'] ? properties['id'] : name
+    if (options.remove) {
+      return parentModule.remove(id)
+    }
+
     CheckstyleModule subModule = parentModule.getOrCreate(id, name)
     if (options.override) {
       subModule.propertyMap = [:]
@@ -91,6 +95,10 @@ class CheckstyleConfig {
         return module
       }
       moduleMap[id].first()
+    }
+
+    List<CheckstyleModule> remove(String id) {
+      moduleMap.remove(id)
     }
   }
 

@@ -25,9 +25,16 @@ class CustomOptions {
 
   boolean override
 
+  boolean remove
+
   static fromHash(Map options) {
     CustomOptions.builder()
-                 .override(options['override'] ? options['override'] : false)
+                 .override(getOptionValue('override', options))
+                 .remove(getOptionValue('remove', options))
                  .build()
+  }
+
+  private static getOptionValue(String name, Map options, boolean defaultValue = false) {
+    options[name] ? options[name] : defaultValue
   }
 }

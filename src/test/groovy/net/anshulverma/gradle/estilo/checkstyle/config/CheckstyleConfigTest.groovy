@@ -34,6 +34,7 @@ class CheckstyleConfigTest extends AbstractSpecification {
       checkstyleConfig.extend('MethodCount', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2'])
       checkstyleConfig.extend('FileTabCharacter', CustomOptions.fromHash([:]), [p1: 'v1', p2: 'v2', eachLine: 'false'])
       checkstyleConfig.extend('NewlineAtEndOfFile', CustomOptions.fromHash([override: true]), [p1: 'v1', p2: 'v2'])
+      checkstyleConfig.extend('Translation', CustomOptions.fromHash([remove: true]), [p1: 'v1', p2: 'v2'])
       def marshalled = ConfigMarshaller.INSTANCE.marshal(checkstyleConfig)
 
     then:
