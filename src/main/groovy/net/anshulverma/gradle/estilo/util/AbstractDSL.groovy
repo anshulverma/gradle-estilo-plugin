@@ -15,8 +15,6 @@
  */
 package net.anshulverma.gradle.estilo.util
 
-import com.google.common.collect.Lists
-
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
@@ -33,7 +31,7 @@ abstract class AbstractDSL<T> {
       throw new MissingMethodException(name, this.class, args)
     }
 
-    def arguments = Lists.newArrayList(args)
+    def arguments = args.collect()
     arguments.push(convertArg(arguments.pop()))
     handle(name, *arguments)
   }
