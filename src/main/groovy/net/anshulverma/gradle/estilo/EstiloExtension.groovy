@@ -32,6 +32,7 @@ class EstiloExtension {
   PropertyCollection suppressionCollection
   ImportControlCollection importControlCollection
   Map headerCheckOptions
+  boolean ignoreCheckstyleWarnings = false
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
@@ -51,6 +52,10 @@ class EstiloExtension {
 
   def header(Map headerCheckOptions) {
     this.headerCheckOptions = headerCheckOptions
+  }
+
+  def ignoreWarnings(boolean ignoreCheckstyleWarnings) {
+    this.ignoreCheckstyleWarnings = ignoreCheckstyleWarnings
   }
 
   boolean hasSuppressions() {

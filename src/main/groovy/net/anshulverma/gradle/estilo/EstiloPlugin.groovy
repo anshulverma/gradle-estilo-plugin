@@ -15,9 +15,9 @@
  */
 package net.anshulverma.gradle.estilo
 
+import net.anshulverma.gradle.estilo.checkstyle.CheckstylePluginHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.quality.Checkstyle
 
 /**
  * Registers the plugin's tasks.
@@ -36,34 +36,7 @@ class EstiloPlugin implements Plugin<Project> {
         checkstyleConfigDir buildDir
       }
 
-      setupCheckstyle(project, buildDir)
-    }
-  }
-
-  private void setupCheckstyle(Project project, buildDir) {
-    project.apply plugin: 'checkstyle'
-
-    project.tasks.withType(Checkstyle) { task ->
-      dependsOn 'estilo'
-      enabled = project.hasProperty('checkstyle') && 'disable' != (project.property('checkstyle'))
-      group = 'Checkstyle'
-
-      doLast {
-        def input = task.name == 'checkstyleMain' ? 'main' : 'test'
-        def inputPath = "${buildDir}/${input}.xml"
-        ant.xslt(in: inputPath,
-                 style: "//${buildDir}/checkstyle.xsl",
-                 out: "${buildDir}/report-${input}.html")
-      }
-    }
-
-    project.checkstyle {
-      showViolations = true
-      ignoreFailures = false
-      sourceSets = [sourceSets.main, sourceSets.test]
-      toolVersion = '6.7'
-      configFile = "$buildDir/checkstyle.xml" as File
-      reportsDir = buildDir as File
+      CheckstylePluginHelper.setupCheckstyle(project, buildDir)
     }
   }
 }
