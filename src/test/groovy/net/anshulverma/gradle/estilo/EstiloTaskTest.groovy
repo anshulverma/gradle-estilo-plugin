@@ -123,9 +123,9 @@ class EstiloTaskTest extends AbstractSpecification {
 """
       FileUtils.fileExists(expectedSuppressionsPath)
       new File(expectedSuppressionsPath).text == '''<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
 <suppressions>
     <suppress columns="34,56,67" lines="23, 34, 45" files=".*\\QTest.java\\E" checks="LineLength"/>
     <suppress files=".*(?&lt;!\\QTest.java\\E)$" id="javadoc"/>
@@ -207,9 +207,8 @@ class EstiloTaskTest extends AbstractSpecification {
 
       FileUtils.fileExists(expectedImportControlPath)
       new File(expectedImportControlPath).text == '''<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!DOCTYPE import-control PUBLIC "-//Puppy Crawl//DTD Import Control 1.0//EN"
+  "http://www.puppycrawl.com/dtds/import_control_1_0.dtd">
 <import-control pkg="com">
     <allow pkg="java"/>
     <allow pkg="javax"/>

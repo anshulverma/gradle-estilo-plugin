@@ -32,8 +32,22 @@ import javax.xml.bind.annotation.XmlRootElement
  */
 class ConfigMarshaller {
 
-  private static final Marshaller MARSHALLER =
-      JAXBContext.newInstance(RootModule, Suppressions, ImportControlDTO).createMarshaller()
+  private static final Map<Class, String> HEADER_BY_TYPE = [
+      (RootModule): '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+''',
+      (Suppressions): '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+''',
+      (ImportControlDTO): '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE import-control PUBLIC "-//Puppy Crawl//DTD Import Control 1.0//EN"
+  "http://www.puppycrawl.com/dtds/import_control_1_0.dtd">
+'''
+  ]
   private static final Unmarshaller UNMARSHALLER =
       JAXBContext.newInstance(RootModule).createUnmarshaller()
   private static final String JAXB_XML_HEADERS = 'com.sun.xml.bind.xmlHeaders'
@@ -41,16 +55,6 @@ class ConfigMarshaller {
       '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'.length() + 1
 
   static final ConfigMarshaller INSTANCE = new ConfigMarshaller()
-
-  static {
-    MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE)
-    MARSHALLER.setProperty(JAXB_XML_HEADERS,
-                           '''<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
-''')
-  }
 
   private ConfigMarshaller() { }
 
@@ -71,7 +75,8 @@ class ConfigMarshaller {
 
   private marshalInternal(Object obj) {
     def writer = new StringWriter()
-    MARSHALLER.marshal(obj, writer)
+    def marshaller = setupMarshaller(obj)
+    marshaller.marshal(obj, writer)
     removeUnwantedHeader(writer.toString())
   }
 
@@ -89,6 +94,18 @@ class ConfigMarshaller {
 
   CheckstyleConfig unmarshal(InputStream inputStream) {
     CheckstyleConfig.buildFrom(UNMARSHALLER.unmarshal(inputStream))
+  }
+
+  private Marshaller setupMarshaller(obj) {
+    def marshaller = JAXBContext.newInstance(obj.class).createMarshaller()
+    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE)
+    if (HEADER_BY_TYPE.containsKey(obj.class)) {
+      marshaller.setProperty(JAXB_XML_HEADERS, HEADER_BY_TYPE[obj.class])
+    } else {
+      throw new IllegalArgumentException("no header available for ${obj.class}. " +
+                                             "Acceptable values: ${HEADER_BY_TYPE.keySet()}")
+    }
+    marshaller
   }
 
   @XmlAccessorType(XmlAccessType.NONE)
