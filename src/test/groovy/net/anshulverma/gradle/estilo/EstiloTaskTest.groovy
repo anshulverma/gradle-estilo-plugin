@@ -138,6 +138,100 @@ class EstiloTaskTest extends AbstractSpecification {
 '''
   }
 
+  def 'test import control should add a ImportControl check module'() {
+
+    given:
+      def project = singleJavaProject()
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
+      def extension = new EstiloExtension()
+      def closure = {
+        source 'google'
+
+        checks {
+          DescendantToken {
+            id 'switchNoDefault'
+            tokens 'LITERAL_SWITCH'
+            limitedTokens 'LITERAL_DEFAULT'
+            maximumNumber 2
+            maximumDepth 1
+          }
+        }
+
+        suppressions {
+          suffix 'Test.java', {
+            checks 'LineLength'
+            lines '23, 34, 45'
+            columns([34, 56, 67])
+          }
+        }
+
+        importControl 'com', {
+          allow pkg: 'java'
+          allow pkg: 'javax'
+          allow pkg: 'com'
+          allow clazz: 'net.anshulverma.gradle.estilo.EstiloTask'
+
+          disallow pkg: 'org'
+          disallow clazz: 'org.Unknown'
+
+          subpackage 'com.test.first', {
+            allow pkg: 'com'
+          }
+
+          subpackage 'com.test.second', {
+            allow pkg: 'com'
+            allow clazz: 'com.test.Testable'
+            disallow pkg: 'com'
+            disallow clazz: 'com.unknown.Weird'
+          }
+        }
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+      EstiloTask estiloTask = project.getTasksByName('estilo', true)[0]
+      estiloTask.execute(extension)
+
+    then:
+      def expectedCheckstylePath = "${project.rootDir}/build/estilo/checkstyle.xml"
+      def expectedSuppressionsPath = "${project.rootDir}/build/estilo/suppressions.xml"
+      def expectedImportControlPath = "${project.rootDir}/build/estilo/import-control.xml"
+      FileUtils.fileExists(expectedCheckstylePath)
+      new File(expectedCheckstylePath).text.contains """<module name="SuppressionFilter">
+        <property name="file" value="$expectedSuppressionsPath"/>
+    </module>
+"""
+      new File(expectedCheckstylePath).text.contains """<module name="ImportControl">
+            <property name="file" value="${expectedImportControlPath}"/>
+        </module>
+"""
+
+      FileUtils.fileExists(expectedImportControlPath)
+      new File(expectedImportControlPath).text == '''<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<import-control pkg="com">
+    <allow pkg="java"/>
+    <allow pkg="javax"/>
+    <allow pkg="com"/>
+    <allow class="net.anshulverma.gradle.estilo.EstiloTask"/>
+    <disallow pkg="org"/>
+    <disallow class="org.Unknown"/>
+    <subpackage name="com.test.first">
+        <allow pkg="com"/>
+    </subpackage>
+    <subpackage name="com.test.second">
+        <allow pkg="com"/>
+        <allow class="com.test.Testable"/>
+        <disallow pkg="com"/>
+        <disallow class="com.unknown.Weird"/>
+    </subpackage>
+</import-control>
+'''
+  }
+
   def fileHash(File file) {
     MessageDigest messageDigest = MessageDigest.getInstance('MD5')
     DigestInputStream inputStream = new DigestInputStream(new FileInputStream(file), messageDigest)

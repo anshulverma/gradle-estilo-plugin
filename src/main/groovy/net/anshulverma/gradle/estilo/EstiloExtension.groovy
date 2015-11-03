@@ -16,6 +16,7 @@
 package net.anshulverma.gradle.estilo
 
 import groovy.util.logging.Slf4j
+import net.anshulverma.gradle.estilo.checkstyle.ImportControlCollection
 import net.anshulverma.gradle.estilo.checkstyle.PropertyCollection
 import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
@@ -29,6 +30,7 @@ class EstiloExtension {
   CheckType baseChecks = CheckType.GOOGLE
   PropertyCollection checkCollection
   PropertyCollection suppressionCollection
+  ImportControlCollection importControlCollection
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
@@ -42,8 +44,16 @@ class EstiloExtension {
     suppressionCollection = evaluate('suppressions', new SuppressionCollection(), closure)
   }
 
+  def importControl(String basePackage, Closure closure) {
+    importControlCollection = evaluate('importControl', new ImportControlCollection(basePackage), closure)
+  }
+
   boolean hasSuppressions() {
     suppressionCollection != null && suppressionCollection.length > 0
+  }
+
+  boolean hasImportControl() {
+    importControlCollection != null && importControlCollection.length > 0
   }
 
   private def evaluate(name, collection, closure) {

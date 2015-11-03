@@ -16,6 +16,7 @@
 package net.anshulverma.gradle.estilo.checkstyle.config
 
 import groovy.transform.builder.Builder
+import net.anshulverma.gradle.estilo.checkstyle.ImportControlCollection
 import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
@@ -32,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement
 class ConfigMarshaller {
 
   private static final Marshaller MARSHALLER =
-      JAXBContext.newInstance(RootModule, Suppressions).createMarshaller()
+      JAXBContext.newInstance(RootModule, Suppressions, ImportControlDTO).createMarshaller()
   private static final Unmarshaller UNMARSHALLER =
       JAXBContext.newInstance(RootModule).createUnmarshaller()
   private static final String JAXB_XML_HEADERS = 'com.sun.xml.bind.xmlHeaders'
@@ -54,17 +55,24 @@ class ConfigMarshaller {
   private ConfigMarshaller() { }
 
   def marshal(CheckstyleConfig checkstyleConfig) {
-    def writer = new StringWriter()
-    MARSHALLER.marshal(checkstyleConfig.toRootModule(), writer)
-    removeUnwantedHeader(writer.toString())
+    marshalInternal(checkstyleConfig.toRootModule())
   }
 
   def marshal(SuppressionCollection suppressionCollection) {
-    def writer = new StringWriter()
-    MARSHALLER.marshal(suppressionCollection.toSuppressions(), writer)
+    String marshalled = marshalInternal(suppressionCollection.toSuppressions())
 
     // seems like there is no way to unescape &amp; easily
-    unescapeAmpersand(removeUnwantedHeader(writer.toString()))
+    unescapeAmpersand(marshalled)
+  }
+
+  def marshal(ImportControlCollection importControlCollection) {
+    marshalInternal(importControlCollection.toImportControlDTO())
+  }
+
+  private marshalInternal(Object obj) {
+    def writer = new StringWriter()
+    MARSHALLER.marshal(obj, writer)
+    removeUnwantedHeader(writer.toString())
   }
 
   private String unescapeAmpersand(String escaped) {
@@ -85,9 +93,7 @@ class ConfigMarshaller {
 
   @XmlAccessorType(XmlAccessType.NONE)
   @XmlRootElement(name = 'module')
-  static class RootModule extends Module {
-
-  }
+  static class RootModule extends Module { }
 
   @XmlAccessorType(XmlAccessType.NONE)
   @Builder
@@ -142,5 +148,44 @@ class ConfigMarshaller {
 
     @XmlAttribute
     String columns
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @XmlRootElement(name = 'import-control')
+  static class ImportControlDTO extends SubPackage {
+
+    @XmlAttribute
+    String pkg
+
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @Builder
+  static class SubPackage {
+
+    @XmlAttribute
+    String name
+
+    @XmlElement(name = 'allow')
+    List<BaseImportControl> allowedImports
+
+    @XmlElement(name = 'disallow')
+    List<BaseImportControl> disallowedImports
+
+    @XmlElement(name = 'subpackage')
+    List<SubPackage> subPackages
+
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  @Builder
+  static class BaseImportControl {
+
+    @XmlAttribute(name = 'class')
+    String clazz
+
+    @XmlAttribute
+    String pkg
+
   }
 }

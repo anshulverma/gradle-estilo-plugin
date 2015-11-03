@@ -192,4 +192,57 @@ class EstiloExtensionTest extends AbstractSpecification {
       extension.suppressionCollection.collection[5].id == 'classJavaDoc'
       extension.suppressionCollection.collection[5].properties.size() == 2
   }
+
+  def 'Allow adding import control'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        importControl 'com', {
+          allow pkg: 'java'
+          allow pkg: 'javax'
+          allow pkg: 'com'
+          allow clazz: 'net.anshulverma.gradle.estilo.EstiloTask'
+
+          disallow pkg: 'org'
+          disallow clazz: 'org.Unknown'
+
+          subpackage 'com.test.first', {
+            allow pkg: 'com'
+          }
+
+          subpackage 'com.test.second', {
+            allow pkg: 'com'
+            allow clazz: 'com.test.Testable'
+            disallow pkg: 'com'
+            disallow clazz: 'com.unknown.Weird'
+          }
+        }
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.importControlCollection.length == 8
+
+      extension.importControlCollection.basePackage == 'com'
+
+      extension.importControlCollection.importControlList[0].type == 'allow'
+      extension.importControlCollection.importControlList[0].scope == 'pkg'
+      extension.importControlCollection.importControlList[0].value == 'java'
+
+      extension.importControlCollection.importControlList[5].type == 'disallow'
+      extension.importControlCollection.importControlList[5].scope == 'class'
+      extension.importControlCollection.importControlList[5].value == 'org.Unknown'
+
+      extension.importControlCollection.subPackages.size() == 2
+
+      extension.importControlCollection.subPackages[0].length == 1
+      extension.importControlCollection.subPackages[1].length == 4
+
+      extension.importControlCollection.subPackages[1].importControlList[1].type == 'allow'
+      extension.importControlCollection.subPackages[1].importControlList[1].scope == 'class'
+      extension.importControlCollection.subPackages[1].importControlList[1].value == 'com.test.Testable'
+  }
 }

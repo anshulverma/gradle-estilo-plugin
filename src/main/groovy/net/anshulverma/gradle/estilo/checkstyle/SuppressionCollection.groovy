@@ -26,11 +26,13 @@ import net.anshulverma.gradle.estilo.checkstyle.matcher.MatcherType
 @Slf4j
 class SuppressionCollection extends PropertyCollection {
 
+  @Override
   protected handle(String name, String files, Closure closure) {
     def matcher = newMatcherBuilder(MatcherType.fromName(name)).matchParam(files).build()
     addSuppression(matcher, closure)
   }
 
+  @Override
   def handle(String name) {
     def builder = newMatcherBuilder(MatcherType.fromName(name))
     builder.metaClass.not = { files, closure ->

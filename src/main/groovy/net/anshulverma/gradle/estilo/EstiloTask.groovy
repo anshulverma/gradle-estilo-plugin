@@ -17,6 +17,7 @@ package net.anshulverma.gradle.estilo
 
 import groovy.util.logging.Slf4j
 import net.anshulverma.gradle.estilo.checkstyle.CustomOptions
+import net.anshulverma.gradle.estilo.checkstyle.ImportControlCollection
 import net.anshulverma.gradle.estilo.checkstyle.PropertyCollection
 import net.anshulverma.gradle.estilo.checkstyle.SuppressionCollection
 import net.anshulverma.gradle.estilo.checkstyle.checks.ConfigFileLoader
@@ -32,6 +33,8 @@ import org.gradle.api.tasks.TaskAction
  */
 @Slf4j
 class EstiloTask extends DefaultTask {
+
+  private static final Object OVERRIDE_OPTIONS = CustomOptions.fromHash([override: true])
 
   String checkstyleConfigDir
 
@@ -49,14 +52,25 @@ class EstiloTask extends DefaultTask {
   def execute(EstiloExtension settings) {
     CheckstyleConfig config = new ConfigFileLoader(settings.baseChecks).load()
     extendChecks(config, settings.checkCollection)
+    addImplicitExtensions(settings, config)
+    createCheckstyleConfig(config)
+    createCheckstyleXSL()
+  }
+
+  private addImplicitExtensions(EstiloExtension settings, CheckstyleConfig config) {
     if (settings.hasSuppressions()) {
       createSupressionsConfig(settings.suppressionCollection)
       config.extend('SuppressionFilter',
-                    CustomOptions.fromHash([override: true]),
+                    OVERRIDE_OPTIONS,
                     [file: "$checkstyleConfigDir/suppressions.xml"])
     }
-    createCheckstyleConfig(config)
-    createCheckstyleXSL()
+
+    if (settings.hasImportControl()) {
+      createImportControlConfig(settings.importControlCollection)
+      config.extend('ImportControl',
+                    OVERRIDE_OPTIONS,
+                    [file: "$checkstyleConfigDir/import-control.xml"])
+    }
   }
 
   private extendChecks(CheckstyleConfig config, PropertyCollection checks) {
@@ -69,14 +83,19 @@ class EstiloTask extends DefaultTask {
   }
 
   private createCheckstyleConfig(CheckstyleConfig config) {
-    def source = ConfigMarshaller.INSTANCE.marshal(config)
-    def destination = "$checkstyleConfigDir/checkstyle.xml"
-    writeToFile(source, destination)
+    createConfigFile(config, "$checkstyleConfigDir/checkstyle.xml")
   }
 
   private createSupressionsConfig(SuppressionCollection suppressionCollection) {
-    def source = ConfigMarshaller.INSTANCE.marshal(suppressionCollection)
-    def destination = "$checkstyleConfigDir/suppressions.xml"
+    createConfigFile(suppressionCollection, "$checkstyleConfigDir/suppressions.xml")
+  }
+
+  private createImportControlConfig(ImportControlCollection importControlCollection) {
+    createConfigFile(importControlCollection, "$checkstyleConfigDir/import-control.xml")
+  }
+
+  private createConfigFile(Object config, String destination) {
+    def source = ConfigMarshaller.INSTANCE.marshal(config)
     writeToFile(source, destination)
   }
 
