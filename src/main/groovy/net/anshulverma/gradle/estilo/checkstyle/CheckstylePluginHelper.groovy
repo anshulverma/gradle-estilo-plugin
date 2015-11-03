@@ -15,6 +15,7 @@
  */
 package net.anshulverma.gradle.estilo.checkstyle
 
+import groovy.util.logging.Slf4j
 import net.anshulverma.gradle.estilo.EstiloExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Checkstyle
@@ -22,6 +23,7 @@ import org.gradle.api.plugins.quality.Checkstyle
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
+@Slf4j
 class CheckstylePluginHelper {
 
   static setupCheckstyle(Project project, String buildDir) {
@@ -45,11 +47,15 @@ class CheckstylePluginHelper {
       def finalizeTask = project.tasks.create("estiloFinalize${input[0].toUpperCase()}${input[1..-1]}") {
         doLast {
           def settings = (EstiloExtension) project.getExtensions().findByName('estilo')
-          if (settings.ignoreCheckstyleWarnings) {
+          def warningsFile = inputPath as File
+          if (!(warningsFile.exists() && warningsFile.text.contains('<error '))) {
             return
           }
-          def warningsFile = inputPath as File
-          if (warningsFile.exists() && warningsFile.text.contains('<error ')) {
+          if (settings.ignoreCheckstyleWarnings) {
+            log.warn("WARNING: There were checkstyle errors for '$input' source set. " +
+                         'Build will continue since you have marked these errors to be ignored. ' +
+                         "For a detailed report, check: file://$outputPath")
+          } else {
             throw new IllegalStateException("Code style check for source set '$input' failed. " +
                                                 "For detailed report, check: file://$outputPath")
           }
