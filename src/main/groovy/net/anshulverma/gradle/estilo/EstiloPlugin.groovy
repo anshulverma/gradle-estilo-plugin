@@ -43,15 +43,17 @@ class EstiloPlugin implements Plugin<Project> {
   private void setupCheckstyle(Project project, buildDir) {
     project.apply plugin: 'checkstyle'
 
-    project.tasks.withType(Checkstyle) {
+    project.tasks.withType(Checkstyle) { task ->
       dependsOn 'estilo'
       enabled = project.hasProperty('checkstyle') && 'disable' != (project.property('checkstyle'))
       group = 'Checkstyle'
 
       doLast {
-        ant.xslt(in: "${buildDir}/main.xml",
+        def input = task.name == 'checkstyleMain' ? 'main' : 'test'
+        def inputPath = "${buildDir}/${input}.xml"
+        ant.xslt(in: inputPath,
                  style: "//${buildDir}/checkstyle.xsl",
-                 out: "${buildDir}/report.html")
+                 out: "${buildDir}/report-${input}.html")
       }
     }
 
