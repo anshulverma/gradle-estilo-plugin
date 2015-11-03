@@ -73,8 +73,14 @@ class EstiloTask extends DefaultTask {
     }
 
     if (settings.hasHeader()) {
+      if (!settings.headerCheckOptions.regexp) {
+        throw new IllegalArgumentException(
+            'only regexp header are supported at the moment. ' +
+                'Feel free to open a issues here if this does not meet your needs: ' +
+                'https://github.com/anshulverma/gradle-estilo-plugin')
+      }
       writeToFile(settings.headerCheckOptions.template, "$checkstyleConfigDir/header.txt")
-      def headerProperties = [ headerFile: "$checkstyleConfigDir/header.txt" ]
+      def headerProperties = [headerFile: "$checkstyleConfigDir/header.txt"]
       if (settings.headerCheckOptions.containsKey('multiLines')) {
         headerProperties.multiLines = settings.headerCheckOptions.multiLines.join(',')
       }
