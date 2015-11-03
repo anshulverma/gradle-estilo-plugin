@@ -52,7 +52,7 @@ class CheckstyleConfig {
       subModule.propertyMap = [:]
     }
     properties.each { key, value ->
-      subModule.propertyMap[key] = CheckstyleProperty.from(key, value)
+      subModule.propertyMap[key] = CheckstyleProperty.from(key, "$value")
     }
     subModule.name = name
     subModule

@@ -31,6 +31,7 @@ class EstiloExtension {
   PropertyCollection checkCollection
   PropertyCollection suppressionCollection
   ImportControlCollection importControlCollection
+  Map headerCheckOptions
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
@@ -48,12 +49,20 @@ class EstiloExtension {
     importControlCollection = evaluate('importControl', new ImportControlCollection(basePackage), closure)
   }
 
+  def header(Map headerCheckOptions) {
+    this.headerCheckOptions = headerCheckOptions
+  }
+
   boolean hasSuppressions() {
     suppressionCollection != null && suppressionCollection.length > 0
   }
 
   boolean hasImportControl() {
     importControlCollection != null && importControlCollection.length > 0
+  }
+
+  boolean hasHeader() {
+    headerCheckOptions != null && !headerCheckOptions.isEmpty()
   }
 
   private def evaluate(name, collection, closure) {

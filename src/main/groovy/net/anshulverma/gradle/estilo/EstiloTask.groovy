@@ -71,6 +71,17 @@ class EstiloTask extends DefaultTask {
                     OVERRIDE_OPTIONS,
                     [file: "$checkstyleConfigDir/import-control.xml"])
     }
+
+    if (settings.hasHeader()) {
+      writeToFile(settings.headerCheckOptions.template, "$checkstyleConfigDir/header.txt")
+      def headerProperties = [ headerFile: "$checkstyleConfigDir/header.txt" ]
+      if (settings.headerCheckOptions.containsKey('multiLines')) {
+        headerProperties.multiLines = settings.headerCheckOptions.multiLines.join(',')
+      }
+      config.extend('RegexpHeader',
+                    OVERRIDE_OPTIONS,
+                    headerProperties)
+    }
   }
 
   private extendChecks(CheckstyleConfig config, PropertyCollection checks) {

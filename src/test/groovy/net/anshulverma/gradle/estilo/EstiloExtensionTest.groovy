@@ -245,4 +245,26 @@ class EstiloExtensionTest extends AbstractSpecification {
       extension.importControlCollection.subPackages[1].importControlList[1].scope == 'class'
       extension.importControlCollection.subPackages[1].importControlList[1].value == 'com.test.Testable'
   }
+
+  def 'Allow adding file header check'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        header regexp: true, multiLines: [22, 23, 24, 25, 27], template: '''^/\\*\\*
+^ \\* Copyright © 2015 Anshul Verma. All Rights Reserved.
+^ \\*/
+'''
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.headerCheckOptions.size() == 3
+
+      extension.headerCheckOptions.regexp == true
+      extension.headerCheckOptions.multiLines == [22, 23, 24, 25, 27]
+      extension.headerCheckOptions.template.length() == 70
+  }
 }

@@ -66,7 +66,6 @@ class EstiloTaskTest extends AbstractSpecification {
   }
 
   def 'test suppressions should add a suppression filter module'() {
-
     given:
       def project = singleJavaProject()
       project.apply plugin: 'net.anshulverma.gradle.estilo'
@@ -139,7 +138,6 @@ class EstiloTaskTest extends AbstractSpecification {
   }
 
   def 'test import control should add a ImportControl check module'() {
-
     given:
       def project = singleJavaProject()
       project.apply plugin: 'net.anshulverma.gradle.estilo'
@@ -230,6 +228,65 @@ class EstiloTaskTest extends AbstractSpecification {
     </subpackage>
 </import-control>
 '''
+  }
+
+  def 'test can add header from estilo'() {
+    given:
+      def project = singleJavaProject()
+      project.apply plugin: 'net.anshulverma.gradle.estilo'
+      def extension = new EstiloExtension()
+      def closure = {
+        header regexp: true, multiLines: [22, 23, 24, 25, 27], template: """^/\\*\\*
+^ \\* Copyright © 2015 Anshul Verma. All Rights Reserved.
+^ \\*
+^ \\* <p>
+^ \\* Licensed under the Apache License, Version 2.0 \\(the "License"\\);
+^ \\* you may not use this file except in compliance with the License.
+^ \\* You may obtain a copy of the License at
+^ \\*
+^ \\* <p>
+^ \\* http://www.apache.org/licenses/LICENSE-2\\.0
+^ \\*
+^ \\* <p>
+^ \\* Unless required by applicable law or agreed to in writing, software
+^ \\* distributed under the License is distributed on an "AS IS" BASIS,
+^ \\* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+^ \\* See the License for the specific language governing permissions and
+^ \\* limitations under the License.
+^ \\*/
+^\$
+^package
+^\$
+^import
+^\$
+^import static
+^\$
+^/\\*\\*
+^ \\*((?! @author )|\$)
+^ \\* @author anshul\\.verma86@gmail\\.com \\(Anshul Verma\\)
+^ \\*/
+"""
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+      EstiloTask estiloTask = project.getTasksByName('estilo', true)[0]
+      estiloTask.execute(extension)
+
+    then:
+      def expectedCheckstylePath = "${project.rootDir}/build/estilo/checkstyle.xml"
+      def expectedHeaderFilePath = "${project.rootDir}/build/estilo/header.txt"
+      FileUtils.fileExists(expectedCheckstylePath)
+      new File(expectedCheckstylePath).text.contains """<module name="RegexpHeader">
+        <property name="headerFile" value="$expectedHeaderFilePath"/>
+        <property name="multiLines" value="22,23,24,25,27"/>
+    </module>
+"""
+
+      FileUtils.fileExists(expectedHeaderFilePath)
+      new File(expectedHeaderFilePath).text ==
+          IOUtils.toString(getClass().getResourceAsStream('/fixtures/test-header.txt'))
   }
 
   def fileHash(File file) {
