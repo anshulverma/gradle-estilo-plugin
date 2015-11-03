@@ -90,6 +90,7 @@ class EstiloExtensionTest extends AbstractSpecification {
             maximumNumber 2
             maximumDepth 1
           }
+          SingleLineJavadoc(remove: true)
         }
       }
       closure.delegate = extension
@@ -98,8 +99,9 @@ class EstiloExtensionTest extends AbstractSpecification {
       closure()
 
     then:
-      extension.checkCollection.length == 2
+      extension.checkCollection.length == 3
 
+      def check3 = extension.checkCollection.collection.pop()
       def check2 = extension.checkCollection.collection.pop()
       def check1 = extension.checkCollection.collection.pop()
 
@@ -120,6 +122,8 @@ class EstiloExtensionTest extends AbstractSpecification {
       check2.maximumDepth == '1'
       check2.customOptions.override == false
       check2.customOptions.remove == false
+
+      check3.name == 'SingleLineJavadoc'
   }
 
   def 'No suppressions and checks are added by default'() {
