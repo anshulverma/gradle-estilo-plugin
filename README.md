@@ -4,9 +4,9 @@
 [![Coverage Status](https://coveralls.io/repos/anshulverma/gradle-estilo-plugin/badge.svg?branch=master&service=github)](https://coveralls.io/github/anshulverma/gradle-estilo-plugin?branch=master)
 [![Download](https://api.bintray.com/packages/anshulverma/gradle-plugins/gradle-estilo-plugin/images/download.svg)](https://bintray.com/anshulverma/gradle-plugins/gradle-estilo-plugin/_latestVersion)
 
-This plugin allows you to setup checkstyle by providing a powerful DSL directly in your build 
-script. This means no more `checkstyle.xml`, `checkstyle.xsl`, `suppressions.xml`, 
-`import-control.xml` and `header.txt`. All of these files are auto generated based on your 
+This plugin allows you to setup checkstyle by providing a powerful DSL directly in your build
+script. This means no more `checkstyle.xml`, `checkstyle.xsl`, `suppressions.xml`,
+`import-control.xml` and `header.txt`. All of these files are auto generated based on your
 configuration options that you specified in the build script.
 
 ## Usage
@@ -33,7 +33,7 @@ apply plugin: 'net.anshulverma.gradle.estilo'
 
 ## Configuration
 
-Here is a sample configuration with inline explanations. Some configuration options are not present 
+Here is a sample configuration with inline explanations. Some configuration options are not present
 in this sample. These and others are explained in the next section.
 
 ``` groovy
@@ -42,7 +42,7 @@ estilo {
 
   ignoreWarnings true // ignore checkstyle warning and let the build continue
 
-  // this block provides a DSL that allows you to 
+  // this block provides a DSL that allows you to
   // override, remove or extend checks of the source file
   checks {
     // this check will override the original check from 'google'.
@@ -67,13 +67,13 @@ estilo {
                  'INTERFACE_DEF, CTOR_DEF, METHOD_DEF, ' +
                  'STATIC_INIT, INSTANCE_INIT, VARIABLE_DEF'
     }
-    
+
     // remove this check completely
     SingleLineJavadoc(remove: true)
   }
 
   // add checkstyle suppressions.
-  // this automatically adds a 'SuppressionFilter' to checkstyle.xml 
+  // this automatically adds a 'SuppressionFilter' to checkstyle.xml
   suppressions {
     suffix('Test.java') {
       checks 'LineLength'
@@ -85,7 +85,7 @@ estilo {
       checks 'FileTabCharacter'
     }
   }
-  
+
   // setup import control.
   // this automatically adds a 'ImportControl' check to checkstyle.xml
   importControl('net.anshulverma.skydns') {
@@ -93,10 +93,10 @@ estilo {
     allow pkg: 'java'
     allow pkg: 'net'
     disallow pkg: 'lombok'
-    
+
     // similarly you can allow or disallow a class
-    allow class: 'sun.misc.Unsafe' 
-    
+    allow class: 'sun.misc.Unsafe'
+
     // setup import control in a similar way for a subpackage
     subpackage('common.threads') {
       allow class: 'java.util.concurrent.Executors'
@@ -126,14 +126,14 @@ estilo {
 ## Estilo DSL properties
 
 The `DSL` provided by the `gradle-estilo-plugin` allows you to control several options and properties
-so that you can have a fine grained control on your custom checkstyle setup. This section explins 
+so that you can have a fine grained control on your custom checkstyle setup. This section explins
 each `DSL` block one by one.
 
 ### `source`
 
 Control what flavor of checkstyle you prefer to use. This is just a starting point as you can still
 override it in the following sections.
- 
+
 Available options: `google` and `sun` (more may be added later)
 
 Default value: `google`
@@ -146,7 +146,7 @@ Default value: `false`
 
 ### `checks`
 
-This block allows you to override, remove or extend the checks provided in the source checkstyle 
+This block allows you to override, remove or extend the checks provided in the source checkstyle
 file. The basic syntax is:
 
 ``` groovy
@@ -157,7 +157,7 @@ checks {
 }
 ```
 
-`<options>` is a `hashmap` and is optional. It can be used to specify if a check should be 
+`<options>` is a `hashmap` and is optional. It can be used to specify if a check should be
 overridden, removed or extended. Default behavior is to extend a check.
 
 Please refer to the example above on how to configure the checks.
@@ -167,7 +167,7 @@ Please refer to the example above on how to configure the checks.
 This block allows you to add checkstyle suppression if you don't want to make some part of your code
 conform to checkstyle rules.
 
-Suppressions are specified using a regex on the class or package and it contains a comma separated 
+Suppressions are specified using a regex on the class or package and it contains a comma separated
 list of checks that are to be suppressed for classes matching that pattern.
 
 The matching pattern can be specified in three ways:
@@ -181,24 +181,24 @@ for a sample use of this.
 
 ### `importControl`
 
-Sometimes you want to control what sort of imports should be allowed or disallowed in your source 
+Sometimes you want to control what sort of imports should be allowed or disallowed in your source
 code. This is done using import control check.
 
 ### `header`
 
-This property lets you specify a header template that all classes must contain. It will 
+This property lets you specify a header template that all classes must contain. It will
 automatically add a `RegexpHeader` check, indicating that presently, `gradle-estilo-plugin` can
 only handle `regexp` headers.
 
 ## HTML reporting
 
-The autogenerated files required for `checkstyle` task are stored in 
+The autogenerated files required for `checkstyle` task are stored in
 `${project.rootDir}/build/estilo`. Along with this a `html` report is also generated for each
 source set.
 
 ## Building
 
-You are welcome to suggest changes or work on them yourself and issue a pull request. To make sure 
+You are welcome to suggest changes or work on them yourself and issue a pull request. To make sure
 your changes pass all requirements, please run the `check` task:
 
 ``` bash
