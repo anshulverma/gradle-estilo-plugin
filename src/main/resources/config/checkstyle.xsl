@@ -135,6 +135,36 @@
     </table>
   </xsl:template>
 
+  <!-- finds last index of a char in string -->
+  <xsl:template name="last-index-of">
+    <xsl:param name="txt"/>
+    <xsl:param name="remainder" select="$txt"/>
+    <xsl:param name="delimiter" select="' '"/>
+
+    <xsl:choose>
+      <xsl:when test="contains($remainder, $delimiter)">
+        <xsl:call-template name="last-index-of">
+          <xsl:with-param name="txt" select="$txt"/>
+          <xsl:with-param name="remainder" select="substring-after($remainder, $delimiter)"/>
+          <xsl:with-param name="delimiter" select="$delimiter"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="lastIndex" select="string-length(substring($txt, 1, string-length($txt)-string-length($remainder)))+1"/>
+        <xsl:choose>
+          <xsl:when test="string-length($remainder)=0">
+            <xsl:value-of select="string-length($txt)"/>
+          </xsl:when>
+          <xsl:when test="$lastIndex>0">
+            <xsl:value-of select="($lastIndex - string-length($delimiter))"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="0"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
   <xsl:template match="file">
     <a name="f-{@name}"></a>
@@ -145,6 +175,7 @@
     <table class="log" border="0" cellpadding="5" cellspacing="2" width="100%">
       <tr>
         <th>Error Description</th>
+        <th>Check Name</th>
         <th>Line</th>
       </tr>
       <xsl:for-each select="key('files', @name)/error">
@@ -153,6 +184,15 @@
           <xsl:call-template name="alternated-row"/>
           <td>
             <xsl:value-of select="@message"/>
+          </td>
+          <td>
+            <xsl:variable name="last-index">
+              <xsl:call-template name="last-index-of">
+                <xsl:with-param name="txt" select="@source"/>
+                <xsl:with-param name="delimiter" select="'.'"></xsl:with-param>
+              </xsl:call-template>
+            </xsl:variable>
+            <xsl:value-of select="substring-before(substring(@source, $last-index + 1), 'Check')"/>
           </td>
           <td>
             <xsl:value-of select="@line"/>
