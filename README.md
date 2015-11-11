@@ -16,7 +16,7 @@ Add a `buildScript` dependency to enable this plugin:
 ``` groovy
 buildscript {
   repositories {
-    jcenter() // also available in mavenCentral()
+    mavenCentral()
   }
 
   dependencies {
