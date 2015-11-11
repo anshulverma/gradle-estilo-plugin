@@ -85,6 +85,7 @@
           <tr>
             <td class="text-align:right">
               Designed for use with <a href='http://checkstyle.sourceforge.net/'>CheckStyle</a> and <a href='http://jakarta.apache.org'>Ant</a>.
+              Built using <a href="https://github.com/anshulverma/gradle-estilo-plugin">gradle-estilo-plugin</a>.
             </td>
           </tr>
         </table>
