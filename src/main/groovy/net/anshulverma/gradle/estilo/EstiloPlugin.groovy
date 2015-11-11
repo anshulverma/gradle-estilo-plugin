@@ -15,6 +15,7 @@
  */
 package net.anshulverma.gradle.estilo
 
+import groovy.util.logging.Slf4j
 import net.anshulverma.gradle.estilo.checkstyle.CheckstylePluginHelper
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -24,12 +25,13 @@ import org.gradle.api.Project
  *
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
+@Slf4j
 class EstiloPlugin implements Plugin<Project> {
 
   @Override
   void apply(def Project project) {
     if (project.plugins.hasPlugin('java')) {
-      def buildDir = "${project.rootDir}/build/estilo"
+      def buildDir = "${project.buildDir}/estilo"
 
       project.extensions.create('estilo', EstiloExtension)
       project.tasks.create('estilo', EstiloTask) {
@@ -37,6 +39,7 @@ class EstiloPlugin implements Plugin<Project> {
       }
 
       CheckstylePluginHelper.setupCheckstyle(project, buildDir)
+      log.debug("adding estilo plugin to project '$project.name' at '$buildDir'")
     }
   }
 }
