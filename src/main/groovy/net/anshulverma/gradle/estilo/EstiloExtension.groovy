@@ -27,12 +27,15 @@ import net.anshulverma.gradle.estilo.checkstyle.checks.CheckType
 @Slf4j
 class EstiloExtension {
 
+  static final String DEFAULT_CHECKSTYLE_VERSION = '6.12.1'
+
   CheckType baseChecks = CheckType.GOOGLE
   PropertyCollection checkCollection
   PropertyCollection suppressionCollection
   ImportControlCollection importControlCollection
   Map headerCheckOptions
   boolean ignoreCheckstyleWarnings = false
+  String checkstyleToolVersion = DEFAULT_CHECKSTYLE_VERSION
 
   def source(String type) {
     baseChecks = CheckType.valueOf(type.toUpperCase())
@@ -56,6 +59,10 @@ class EstiloExtension {
 
   def ignoreWarnings(boolean ignoreCheckstyleWarnings) {
     this.ignoreCheckstyleWarnings = ignoreCheckstyleWarnings
+  }
+
+  def toolVersion(String checkstyleToolVersion) {
+    this.checkstyleToolVersion = checkstyleToolVersion
   }
 
   boolean hasSuppressions() {

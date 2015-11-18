@@ -65,11 +65,13 @@ class CheckstylePluginHelper {
       task.finalizedBy finalizeTask
     }
 
+    def settings = (EstiloExtension) project.getExtensions().findByName('estilo')
+
     project.checkstyle {
       showViolations = true
       ignoreFailures = false
       sourceSets = [sourceSets.main, sourceSets.test]
-      toolVersion = '6.7'
+      toolVersion = settings.checkstyleToolVersion
       configFile = "$buildDir/checkstyle.xml" as File
       reportsDir = buildDir as File
     }

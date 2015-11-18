@@ -61,8 +61,8 @@ class EstiloTaskTest extends AbstractSpecification {
 
     where:
       checkType        | hash
-      CheckType.GOOGLE | [-62, 6, -40, 36, -31, -5, -56, 11, 119, 5, 18, -89, -84, 39, -71, 75]
-      CheckType.SUN    | [124, -99, 69, -22, 64, 85, 118, 17, -83, -38, -81, -93, -28, 121, 99, -34]
+      CheckType.GOOGLE | [-97, -66, 111, -98, 56, -44, 102, -100, -74, 43, 81, 0, 115, 29, 116, -105]
+      CheckType.SUN    | [-12, -22, -63, 29, 93, 19, -115, 107, -17, -52, 21, -4, 2, 100, 71, 79]
   }
 
   def 'test suppressions should add a suppression filter module'() {

@@ -24,8 +24,8 @@ import spock.lang.Unroll
  */
 class EstiloExtensionTest extends AbstractSpecification {
 
-  @Unroll('convert #checkType check type')
-  def 'Choose a valid base checks type'() {
+  @Unroll
+  def 'check type #checkType named #name selection test'() {
     given:
       def extension = new EstiloExtension()
       def closure = {
@@ -133,6 +133,9 @@ class EstiloExtensionTest extends AbstractSpecification {
     then:
       extension.checkCollection == null
       extension.suppressionCollection == null
+      !extension.hasImportControl()
+      !extension.hasSuppressions()
+      !extension.hasHeader()
   }
 
   def 'Allow adding suppressions'() {
@@ -169,6 +172,9 @@ class EstiloExtensionTest extends AbstractSpecification {
 
     then:
       extension.suppressionCollection.length == 6
+      !extension.hasImportControl()
+      extension.hasSuppressions()
+      !extension.hasHeader()
 
       extension.suppressionCollection.collection[0].files == '.*\\QTest.java\\E'
       extension.suppressionCollection.collection[0].checks == 'LineLength'
@@ -229,6 +235,9 @@ class EstiloExtensionTest extends AbstractSpecification {
 
     then:
       extension.importControlCollection.length == 8
+      extension.hasImportControl()
+      !extension.hasSuppressions()
+      !extension.hasHeader()
 
       extension.importControlCollection.basePackage == 'com'
 
@@ -266,9 +275,42 @@ class EstiloExtensionTest extends AbstractSpecification {
 
     then:
       extension.headerCheckOptions.size() == 3
+      !extension.hasImportControl()
+      !extension.hasSuppressions()
+      extension.hasHeader()
 
       extension.headerCheckOptions.regexp == true
       extension.headerCheckOptions.multiLines == [22, 23, 24, 25, 27]
       extension.headerCheckOptions.template.length() == 70
+  }
+
+  def 'allow adding tool version'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        toolVersion '1.2.3.4'
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.checkstyleToolVersion == '1.2.3.4'
+  }
+
+  def 'allow ignoring warnings'() {
+    given:
+      def extension = new EstiloExtension()
+      def closure = {
+        ignoreWarnings true
+      }
+      closure.delegate = extension
+
+    when:
+      closure()
+
+    then:
+      extension.ignoreCheckstyleWarnings
   }
 }

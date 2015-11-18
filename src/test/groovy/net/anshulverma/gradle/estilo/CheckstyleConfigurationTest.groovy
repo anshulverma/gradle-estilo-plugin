@@ -36,7 +36,7 @@ class CheckstyleConfigurationTest extends AbstractSpecification {
       extension.showViolations
       !extension.ignoreFailures
       extension.sourceSets.size() == 2
-      extension.toolVersion == '6.7'
+      extension.toolVersion == '6.12.1'
       extension.configFile instanceof File
       extension.configFile.path == "$buildDir/checkstyle.xml"
   }

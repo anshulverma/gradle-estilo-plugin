@@ -48,8 +48,8 @@ class FileLoaderTest extends AbstractSpecification {
 
     where:
       checkType        | hash
-      CheckType.GOOGLE | [-107, -45, 71, 124, 50, 103, -47, 32, -74, 58, -63, -23, 56, 8, -56, 122]
-      CheckType.SUN    | [118, -45, -18, 87, 12, 27, -77, 123, -122, -14, -128, -107, 121, -53, 119, -29]
+      CheckType.GOOGLE | [44, -55, 53, -59, -34, -78, 95, -46, -92, 29, 109, -104, 126, -12, 120, -16]
+      CheckType.SUN    | [123, -62, -28, 57, 21, -38, -118, -78, -54, -54, -44, 67, -21, 63, -66, -79]
   }
 
   def fileHash(File file) {

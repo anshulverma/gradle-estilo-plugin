@@ -41,6 +41,8 @@ estilo {
   source 'google' // starting point for checkstyle checks (other option: 'sun')
 
   ignoreWarnings true // ignore checkstyle warning and let the build continue
+  
+  toolVersion '6.12.1' // set version of checkstyle to use
 
   // this block provides a DSL that allows you to
   // override, remove or extend checks of the source file
