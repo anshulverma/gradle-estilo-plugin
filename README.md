@@ -20,7 +20,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'net.anshulverma.gradle:gradle-estilo-plugin:0.4.5'
+    classpath 'net.anshulverma.gradle:gradle-estilo-plugin:0.4.6'
   }
 }
 ```
