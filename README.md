@@ -146,6 +146,13 @@ Control whether to fail the build or not if a checkstyle error is encountered.
 
 Default value: `false`
 
+### `toolVersion`
+
+Control checkstyle tool version. This will effectively use the checks defined in the checkstyle
+version specified.
+
+Default value: `6.12.1`
+
 ### `checks`
 
 This block allows you to override, remove or extend the checks provided in the source checkstyle
