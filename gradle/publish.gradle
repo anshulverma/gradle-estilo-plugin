@@ -9,6 +9,14 @@ ext {
   gpgPassphrase = project.hasProperty('gpgPassphrase') ? project.property('gpgPassphrase') : System.env['GPG_PASSPHRASE']
   ossUser = project.hasProperty('ossUser') ? project.property('ossUser') : System.env['OSS_USER']
   ossPassword = project.hasProperty('ossPassword') ? project.property('ossPassword') : System.env['OSS_PASSWORD']
+
+  releaseExt = {
+    versionedFiles << [
+        'README.md': [
+            23: '    classpath \'net.anshulverma.gradle:gradle-estilo-plugin:$nextVersion\''
+        ]
+    ]
+  }
 }
 
 publishing {
