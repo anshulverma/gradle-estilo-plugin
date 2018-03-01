@@ -38,7 +38,11 @@ in this sample. These and others are explained in the next section.
 
 ``` groovy
 estilo {
-  source 'google' // starting point for checkstyle checks (other option: 'sun')
+  // starting point for checkstyle checks (other options: google, sun)
+  source 'empty' 
+  
+  // you can specify a path to a custom starting point checkstyle.xml instead of choosing from a template above. 
+  customSource ''
 
   ignoreWarnings true // ignore checkstyle warning and let the build continue
   

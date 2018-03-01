@@ -43,6 +43,29 @@ class EstiloExtensionTest extends AbstractSpecification {
       checkType        | name
       CheckType.GOOGLE | 'google'
       CheckType.SUN    | 'sun'
+      CheckType.EMPTY  | 'empty'
+      CheckType.CUSTOM | 'custom'
+  }
+
+  def 'Allow custom baseChecks'(){
+    given:
+      def extention = new EstiloExtension()
+      def closure = {
+        customSource checkstylePath
+      }
+      closure.delegate = extention
+
+    when:
+      closure()
+
+    then:
+      extention.baseChecks.filename == checkstylePath
+
+    where:
+      checktype                                 | checkstylePath
+      CheckType.CUSTOM                          | 'config/checkstyle.xml'
+      CheckType.setCustom('/path/to/somewhere') | '/path/to/somewhere'
+
   }
 
   def 'Allow adding RegexpHeader check'() {

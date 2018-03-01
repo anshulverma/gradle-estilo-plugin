@@ -21,6 +21,8 @@ import net.anshulverma.gradle.estilo.test.AbstractSpecification
 import org.apache.commons.io.IOUtils
 import org.codehaus.plexus.util.FileUtils
 import spock.lang.Unroll
+
+import javax.xml.bind.DatatypeConverter
 import java.security.DigestInputStream
 import java.security.MessageDigest
 
@@ -38,7 +40,7 @@ class FileLoaderTest extends AbstractSpecification {
       settings.baseChecks = checkType
 
     when:
-      EstiloTask estiloTask = project.getTasksByName('estilo', true)[0]
+      EstiloTask estiloTask = project.getTasksByName('estilo', true)[0] as EstiloTask
       estiloTask.execute(settings)
 
     then:
@@ -50,6 +52,9 @@ class FileLoaderTest extends AbstractSpecification {
       checkType        | hash
       CheckType.GOOGLE | [44, -55, 53, -59, -34, -78, 95, -46, -92, 29, 109, -104, 126, -12, 120, -16]
       CheckType.SUN    | [123, -62, -28, 57, 21, -38, -118, -78, -54, -54, -44, 67, -21, 63, -66, -79]
+      CheckType.EMPTY  | hex2byte("3e9f1a5f8e8d821e443ead6b7daeeed6")
+
+    CheckType.setCustom("src/main/resources/empty_checks.xml") | hex2byte("3e9f1a5f8e8d821e443ead6b7daeeed6")
   }
 
   def fileHash(File file) {
@@ -57,5 +62,9 @@ class FileLoaderTest extends AbstractSpecification {
     DigestInputStream inputStream = new DigestInputStream(new FileInputStream(file), messageDigest)
     IOUtils.toByteArray(inputStream)
     messageDigest.digest()
+  }
+
+  def hex2byte(String hex){
+    DatatypeConverter.parseHexBinary(hex)
   }
 }

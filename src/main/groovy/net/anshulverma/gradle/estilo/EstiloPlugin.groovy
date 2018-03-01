@@ -29,7 +29,7 @@ import org.gradle.api.Project
 class EstiloPlugin implements Plugin<Project> {
 
   @Override
-  void apply(def Project project) {
+  void apply(Project project) {
     if (project.plugins.hasPlugin('java')) {
       def buildDir = "${project.buildDir}/estilo"
 

@@ -41,6 +41,10 @@ class EstiloExtension {
     baseChecks = CheckType.valueOf(type.toUpperCase())
   }
 
+  def customSource(String configPath){
+    baseChecks = CheckType.setCustom(configPath)
+  }
+
   def checks(Closure closure) {
     checkCollection = evaluate('checks', new PropertyCollection(), closure)
   }
