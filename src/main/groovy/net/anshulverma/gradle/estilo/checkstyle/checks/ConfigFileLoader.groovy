@@ -21,6 +21,8 @@ import net.anshulverma.gradle.estilo.checkstyle.config.CheckstyleConfig
 import net.anshulverma.gradle.estilo.checkstyle.config.ConfigMarshaller
 import org.apache.commons.io.FileUtils
 
+import java.nio.file.Paths
+
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
@@ -31,12 +33,16 @@ class ConfigFileLoader {
   CheckType checkType
 
   CheckstyleConfig load() {
-    loadResource("/${checkType.filename}")
+    if(checkType == CheckType.CUSTOM){
+      loadUrl(new File(checkType.filename).toURI().toURL())
+    }else{
+      loadUrl(this.getClass().getResource("/${checkType.filename}"))
+    }
   }
 
-  private CheckstyleConfig loadResource(String resource) {
-    File tmpFile = File.createTempFile('checkstyle', checkType.filename)
-    FileUtils.copyURLToFile(this.getClass().getResource(resource), tmpFile)
+  private CheckstyleConfig loadUrl(URL url){
+    File tmpFile = File.createTempFile('checkstyle', Paths.get(checkType.filename).getFileName().toString())
+    FileUtils.copyURLToFile(url, tmpFile)
     ConfigMarshaller.INSTANCE.unmarshal(tmpFile)
   }
 }

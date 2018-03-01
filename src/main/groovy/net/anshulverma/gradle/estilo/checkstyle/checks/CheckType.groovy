@@ -18,14 +18,24 @@ package net.anshulverma.gradle.estilo.checkstyle.checks
 /**
  * @author Anshul Verma (anshul.verma86@gmail.com)
  */
-public enum CheckType {
+public class CheckType {
 
-  GOOGLE('google_checks.xml'),
-  SUN('sun_checks.xml')
+  public static GOOGLE = new CheckType('google_checks.xml')
+  public static SUN = new CheckType('sun_checks.xml')
+  public static EMPTY = new CheckType('empty_checks.xml')
+  public static CUSTOM = new CheckType("config/checkstyle.xml")
 
   final String filename
 
   private CheckType(def filename) {
     this.filename = filename
+  }
+
+  static setCustom(String filename){
+    CUSTOM = new CheckType(filename)
+  }
+
+  static CheckType valueOf(String name){
+    CheckType.class.getField(name).get(null) as CheckType
   }
 }
